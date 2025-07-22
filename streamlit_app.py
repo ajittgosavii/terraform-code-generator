@@ -329,7 +329,7 @@ class GitHubPatternFetcher:
         return patterns
     # Add these additional methods to your GitHubPatternFetcher class
     def _get_dynamodb_code(self) -> Dict[str, str]:
-    return {
+        return {
             "main.tf": '''# DynamoDB Table
             resource "aws_dynamodb_table" "main" {
             name         = "${var.environment}-${var.table_name}"
