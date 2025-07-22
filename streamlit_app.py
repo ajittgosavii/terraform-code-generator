@@ -4,10 +4,9 @@ import base64
 import io
 import zipfile
 import json
-import pandas as pd
 from typing import List, Dict, Optional
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 import plotly.express as px
 import plotly.graph_objects as go
 
@@ -636,6 +635,602 @@ output "bucket_domain_name" {
 }'''
         }
     
+    def _get_alb_code(self) -> Dict[str, str]:
+        return {
+            "main.tf": '''# Application Load Balancer
+resource "aws_lb" "main" {
+  name               = "${var.environment}-${var.alb_name}"
+  internal           = var.internal_alb
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.alb.id]
+  subnets            = var.subnet_ids
+
+  enable_deletion_protection = var.enable_deletion_protection
+
+  tags = merge(var.common_tags, {
+    Name = "${var.environment}-${var.alb_name}"
+  })
+}
+
+# ALB Security Group
+resource "aws_security_group" "alb" {
+  name_prefix = "${var.environment}-${var.alb_name}-alb-"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge(var.common_tags, {
+    Name = "${var.environment}-${var.alb_name}-alb-sg"
+  })
+}
+
+# Target Group
+resource "aws_lb_target_group" "main" {
+  name     = "${var.environment}-${var.alb_name}-tg"
+  port     = var.target_port
+  protocol = "HTTP"
+  vpc_id   = var.vpc_id
+
+  health_check {
+    enabled             = true
+    healthy_threshold   = 2
+    interval            = 30
+    matcher             = "200"
+    path                = var.health_check_path
+    port                = "traffic-port"
+    protocol            = "HTTP"
+    timeout             = 5
+    unhealthy_threshold = 2
+  }
+
+  tags = merge(var.common_tags, {
+    Name = "${var.environment}-${var.alb_name}-tg"
+  })
+}
+
+# ALB Listener
+resource "aws_lb_listener" "main" {
+  load_balancer_arn = aws_lb.main.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.main.arn
+  }
+}''',
+            "variables.tf": '''variable "environment" {
+  description = "Environment name"
+  type        = string
+  default     = "dev"
+}
+
+variable "alb_name" {
+  description = "Name for the ALB"
+  type        = string
+  default     = "web-alb"
+}
+
+variable "vpc_id" {
+  description = "VPC ID where the ALB will be created"
+  type        = string
+}
+
+variable "subnet_ids" {
+  description = "Subnet IDs for the ALB"
+  type        = list(string)
+}
+
+variable "internal_alb" {
+  description = "Whether the ALB is internal"
+  type        = bool
+  default     = false
+}
+
+variable "enable_deletion_protection" {
+  description = "Enable deletion protection for the ALB"
+  type        = bool
+  default     = false
+}
+
+variable "target_port" {
+  description = "Port for the target group"
+  type        = number
+  default     = 80
+}
+
+variable "health_check_path" {
+  description = "Health check path"
+  type        = string
+  default     = "/"
+}
+
+variable "common_tags" {
+  description = "Common tags to apply to all resources"
+  type        = map(string)
+  default = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
+}''',
+            "outputs.tf": '''output "alb_arn" {
+  description = "ARN of the ALB"
+  value       = aws_lb.main.arn
+}
+
+output "alb_dns_name" {
+  description = "DNS name of the ALB"
+  value       = aws_lb.main.dns_name
+}
+
+output "alb_zone_id" {
+  description = "Zone ID of the ALB"
+  value       = aws_lb.main.zone_id
+}
+
+output "target_group_arn" {
+  description = "ARN of the target group"
+  value       = aws_lb_target_group.main.arn
+}'''
+        }
+    
+    def _get_eks_code(self) -> Dict[str, str]:
+        return {
+            "main.tf": '''# EKS Cluster
+resource "aws_eks_cluster" "main" {
+  name     = "${var.environment}-${var.cluster_name}"
+  role_arn = aws_iam_role.cluster.arn
+  version  = var.kubernetes_version
+
+  vpc_config {
+    subnet_ids              = var.subnet_ids
+    endpoint_private_access = var.endpoint_private_access
+    endpoint_public_access  = var.endpoint_public_access
+    public_access_cidrs     = var.public_access_cidrs
+  }
+
+  encryption_config {
+    provider {
+      key_arn = aws_kms_key.eks.arn
+    }
+    resources = ["secrets"]
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.cluster_amazon_eks_cluster_policy,
+  ]
+
+  tags = merge(var.common_tags, {
+    Name = "${var.environment}-${var.cluster_name}"
+  })
+}
+
+# EKS Node Group
+resource "aws_eks_node_group" "main" {
+  cluster_name    = aws_eks_cluster.main.name
+  node_group_name = "${var.environment}-${var.cluster_name}-nodes"
+  node_role_arn   = aws_iam_role.node_group.arn
+  subnet_ids      = var.private_subnet_ids
+
+  capacity_type  = var.capacity_type
+  instance_types = var.instance_types
+
+  scaling_config {
+    desired_size = var.desired_capacity
+    max_size     = var.max_capacity
+    min_size     = var.min_capacity
+  }
+
+  update_config {
+    max_unavailable = 1
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.node_group_amazon_eks_worker_node_policy,
+    aws_iam_role_policy_attachment.node_group_amazon_eks_cni_policy,
+    aws_iam_role_policy_attachment.node_group_amazon_ec2_container_registry_read_only,
+  ]
+
+  tags = merge(var.common_tags, {
+    Name = "${var.environment}-${var.cluster_name}-nodes"
+  })
+}''',
+            "variables.tf": '''variable "environment" {
+  description = "Environment name"
+  type        = string
+  default     = "dev"
+}
+
+variable "cluster_name" {
+  description = "Name of the EKS cluster"
+  type        = string
+  default     = "main"
+}
+
+variable "kubernetes_version" {
+  description = "Kubernetes version"
+  type        = string
+  default     = "1.27"
+}
+
+variable "subnet_ids" {
+  description = "Subnet IDs for the EKS cluster"
+  type        = list(string)
+}
+
+variable "private_subnet_ids" {
+  description = "Private subnet IDs for the node group"
+  type        = list(string)
+}
+
+variable "endpoint_private_access" {
+  description = "Enable private API server endpoint"
+  type        = bool
+  default     = true
+}
+
+variable "endpoint_public_access" {
+  description = "Enable public API server endpoint"
+  type        = bool
+  default     = true
+}
+
+variable "public_access_cidrs" {
+  description = "CIDR blocks that can access the public endpoint"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "instance_types" {
+  description = "Instance types for the node group"
+  type        = list(string)
+  default     = ["t3.medium"]
+}
+
+variable "capacity_type" {
+  description = "Capacity type for the node group"
+  type        = string
+  default     = "ON_DEMAND"
+}
+
+variable "desired_capacity" {
+  description = "Desired number of nodes"
+  type        = number
+  default     = 2
+}
+
+variable "max_capacity" {
+  description = "Maximum number of nodes"
+  type        = number
+  default     = 4
+}
+
+variable "min_capacity" {
+  description = "Minimum number of nodes"
+  type        = number
+  default     = 1
+}
+
+variable "common_tags" {
+  description = "Common tags to apply to all resources"
+  type        = map(string)
+  default = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
+}''',
+            "outputs.tf": '''output "cluster_id" {
+  description = "EKS cluster ID"
+  value       = aws_eks_cluster.main.id
+}
+
+output "cluster_arn" {
+  description = "EKS cluster ARN"
+  value       = aws_eks_cluster.main.arn
+}
+
+output "cluster_endpoint" {
+  description = "EKS cluster endpoint"
+  value       = aws_eks_cluster.main.endpoint
+}
+
+output "cluster_security_group_id" {
+  description = "Security group ID attached to the EKS cluster"
+  value       = aws_eks_cluster.main.vpc_config[0].cluster_security_group_id
+}
+
+output "cluster_certificate_authority_data" {
+  description = "Base64 encoded certificate data required to communicate with the cluster"
+  value       = aws_eks_cluster.main.certificate_authority[0].data
+}'''
+        }
+    
+    def _get_rds_code(self) -> Dict[str, str]:
+        return {
+            "main.tf": '''# RDS Database
+resource "aws_db_instance" "main" {
+  identifier = "${var.environment}-${var.db_name}"
+
+  # Engine options
+  engine         = var.engine
+  engine_version = var.engine_version
+  instance_class = var.instance_class
+
+  # Storage
+  allocated_storage     = var.allocated_storage
+  max_allocated_storage = var.max_allocated_storage
+  storage_type          = var.storage_type
+  storage_encrypted     = true
+
+  # Database configuration
+  db_name  = var.database_name
+  username = var.username
+  password = var.password
+  port     = var.port
+
+  # Network & Security
+  vpc_security_group_ids = [aws_security_group.rds.id]
+  db_subnet_group_name   = aws_db_subnet_group.main.name
+  publicly_accessible    = var.publicly_accessible
+
+  # Backup & Maintenance
+  backup_retention_period = var.backup_retention_period
+  backup_window          = var.backup_window
+  maintenance_window     = var.maintenance_window
+  delete_automated_backups = false
+
+  # Monitoring
+  performance_insights_enabled = var.performance_insights_enabled
+  monitoring_interval         = var.monitoring_interval
+
+  # Deletion protection
+  deletion_protection = var.deletion_protection
+  skip_final_snapshot = var.skip_final_snapshot
+
+  tags = merge(var.common_tags, {
+    Name = "${var.environment}-${var.db_name}"
+  })
+}
+
+# DB Subnet Group
+resource "aws_db_subnet_group" "main" {
+  name       = "${var.environment}-${var.db_name}-subnet-group"
+  subnet_ids = var.subnet_ids
+
+  tags = merge(var.common_tags, {
+    Name = "${var.environment}-${var.db_name}-subnet-group"
+  })
+}
+
+# Security Group for RDS
+resource "aws_security_group" "rds" {
+  name_prefix = "${var.environment}-${var.db_name}-rds-"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port       = var.port
+    to_port         = var.port
+    protocol        = "tcp"
+    security_groups = var.allowed_security_groups
+    cidr_blocks     = var.allowed_cidr_blocks
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge(var.common_tags, {
+    Name = "${var.environment}-${var.db_name}-rds-sg"
+  })
+}''',
+            "variables.tf": '''variable "environment" {
+  description = "Environment name"
+  type        = string
+  default     = "dev"
+}
+
+variable "db_name" {
+  description = "Name identifier for the RDS instance"
+  type        = string
+  default     = "main"
+}
+
+variable "engine" {
+  description = "Database engine"
+  type        = string
+  default     = "mysql"
+}
+
+variable "engine_version" {
+  description = "Database engine version"
+  type        = string
+  default     = "8.0"
+}
+
+variable "instance_class" {
+  description = "RDS instance class"
+  type        = string
+  default     = "db.t3.micro"
+}
+
+variable "allocated_storage" {
+  description = "Initial allocated storage in GB"
+  type        = number
+  default     = 20
+}
+
+variable "max_allocated_storage" {
+  description = "Maximum allocated storage in GB"
+  type        = number
+  default     = 100
+}
+
+variable "storage_type" {
+  description = "Storage type"
+  type        = string
+  default     = "gp2"
+}
+
+variable "database_name" {
+  description = "Name of the database"
+  type        = string
+  default     = "appdb"
+}
+
+variable "username" {
+  description = "Database master username"
+  type        = string
+  default     = "admin"
+}
+
+variable "password" {
+  description = "Database master password"
+  type        = string
+  sensitive   = true
+}
+
+variable "port" {
+  description = "Database port"
+  type        = number
+  default     = 3306
+}
+
+variable "vpc_id" {
+  description = "VPC ID"
+  type        = string
+}
+
+variable "subnet_ids" {
+  description = "Subnet IDs for the DB subnet group"
+  type        = list(string)
+}
+
+variable "allowed_security_groups" {
+  description = "Security groups allowed to access the database"
+  type        = list(string)
+  default     = []
+}
+
+variable "allowed_cidr_blocks" {
+  description = "CIDR blocks allowed to access the database"
+  type        = list(string)
+  default     = []
+}
+
+variable "publicly_accessible" {
+  description = "Whether the database is publicly accessible"
+  type        = bool
+  default     = false
+}
+
+variable "backup_retention_period" {
+  description = "Backup retention period in days"
+  type        = number
+  default     = 7
+}
+
+variable "backup_window" {
+  description = "Backup window"
+  type        = string
+  default     = "03:00-04:00"
+}
+
+variable "maintenance_window" {
+  description = "Maintenance window"
+  type        = string
+  default     = "sun:04:00-sun:05:00"
+}
+
+variable "performance_insights_enabled" {
+  description = "Enable Performance Insights"
+  type        = bool
+  default     = false
+}
+
+variable "monitoring_interval" {
+  description = "Enhanced monitoring interval"
+  type        = number
+  default     = 0
+}
+
+variable "deletion_protection" {
+  description = "Enable deletion protection"
+  type        = bool
+  default     = true
+}
+
+variable "skip_final_snapshot" {
+  description = "Skip final snapshot when deleting"
+  type        = bool
+  default     = false
+}
+
+variable "common_tags" {
+  description = "Common tags to apply to all resources"
+  type        = map(string)
+  default = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
+}''',
+            "outputs.tf": '''output "db_instance_address" {
+  description = "RDS instance hostname"
+  value       = aws_db_instance.main.address
+}
+
+output "db_instance_arn" {
+  description = "RDS instance ARN"
+  value       = aws_db_instance.main.arn
+}
+
+output "db_instance_endpoint" {
+  description = "RDS instance endpoint"
+  value       = aws_db_instance.main.endpoint
+}
+
+output "db_instance_id" {
+  description = "RDS instance ID"
+  value       = aws_db_instance.main.id
+}
+
+output "db_instance_port" {
+  description = "RDS instance port"
+  value       = aws_db_instance.main.port
+}
+
+output "db_subnet_group_id" {
+  description = "DB subnet group name"
+  value       = aws_db_subnet_group.main.id
+}
+
+output "db_security_group_id" {
+  description = "RDS security group ID"
+  value       = aws_security_group.rds.id
+}'''
+        }
+    
     def _get_basic_code(self, pattern_name: str) -> Dict[str, str]:
         return {
             "main.tf": f'''# {pattern_name} Configuration
@@ -1239,7 +1834,7 @@ def render_analytics_dashboard():
     with col4:
         st.metric("Avg. Response Time", "3.4s", delta="-0.5s")
     
-    # Sample charts
+    # Sample charts using plotly (without pandas)
     st.markdown("---")
     
     # Usage over time
@@ -1248,16 +1843,15 @@ def render_analytics_dashboard():
     with col1:
         st.subheader("📈 Usage Trends")
         
-        # Sample data
-        dates = pd.date_range(start='2024-01-01', end='2024-12-31', freq='M')
-        usage_data = pd.DataFrame({
-            'Date': dates,
-            'Pattern Downloads': [20, 25, 30, 35, 45, 50, 55, 60, 65, 70, 75, 80],
-            'AI Generations': [15, 20, 28, 35, 42, 48, 55, 62, 68, 75, 82, 90]
-        })
+        # Sample data using lists instead of pandas
+        months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        pattern_downloads = [20, 25, 30, 35, 45, 50, 55, 60, 65, 70, 75, 80]
+        ai_generations = [15, 20, 28, 35, 42, 48, 55, 62, 68, 75, 82, 90]
         
-        fig = px.line(usage_data, x='Date', y=['Pattern Downloads', 'AI Generations'],
-                     title='Monthly Usage Trends')
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=months, y=pattern_downloads, mode='lines+markers', name='Pattern Downloads'))
+        fig.add_trace(go.Scatter(x=months, y=ai_generations, mode='lines+markers', name='AI Generations'))
+        fig.update_layout(title='Monthly Usage Trends', xaxis_title='Month', yaxis_title='Count')
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
@@ -1267,7 +1861,8 @@ def render_analytics_dashboard():
         categories = ['Compute', 'Storage', 'Networking', 'Database', 'Security']
         downloads = [120, 95, 110, 85, 70]
         
-        fig = px.pie(values=downloads, names=categories, title='Downloads by Category')
+        fig = go.Figure(data=go.Pie(labels=categories, values=downloads))
+        fig.update_layout(title='Downloads by Category')
         st.plotly_chart(fig, use_container_width=True)
 
 def render_about_page():
