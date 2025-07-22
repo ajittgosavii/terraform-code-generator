@@ -85,8 +85,10 @@ class GitHubPatternFetcher:
         """Fetch AWS Terraform patterns from popular repositories"""
         patterns = []
         
-        # Predefined patterns based on popular terraform modules
+        # Replace the predefined_patterns section in your GitHubPatternFetcher class with this expanded list
+
         predefined_patterns = [
+            # Networking (Most Essential)
             {
                 "name": "VPC Module",
                 "description": "Complete VPC setup with public/private subnets, NAT gateway, and internet gateway",
@@ -95,6 +97,22 @@ class GitHubPatternFetcher:
                 "files": ["main.tf", "variables.tf", "outputs.tf"]
             },
             {
+                "name": "Security Groups",
+                "description": "Reusable security groups for web, database, and application tiers",
+                "category": "security",
+                "complexity": "beginner",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            {
+                "name": "NAT Gateway",
+                "description": "NAT Gateway with Elastic IP for private subnet internet access",
+                "category": "networking",
+                "complexity": "beginner",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            
+            # Compute (Essential)
+            {
                 "name": "EC2 Instance",
                 "description": "Configurable EC2 instance with security groups and key pair management",
                 "category": "compute",
@@ -102,35 +120,199 @@ class GitHubPatternFetcher:
                 "files": ["main.tf", "variables.tf", "outputs.tf"]
             },
             {
-                "name": "RDS Database",
-                "description": "MySQL/PostgreSQL RDS instance with backup and monitoring",
-                "category": "database",
+                "name": "Auto Scaling Group",
+                "description": "Auto Scaling Group with Launch Template and multiple AZ support",
+                "category": "compute",
                 "complexity": "intermediate",
                 "files": ["main.tf", "variables.tf", "outputs.tf"]
             },
             {
-                "name": "S3 Bucket",
-                "description": "S3 bucket with versioning, encryption, and lifecycle policies",
-                "category": "storage",
-                "complexity": "beginner",
-                "files": ["main.tf", "variables.tf", "outputs.tf"]
-            },
-            {
-                "name": "Application Load Balancer",
-                "description": "ALB with target groups, health checks, and SSL termination",
-                "category": "networking",
+                "name": "Lambda Function",
+                "description": "Serverless Lambda function with IAM role, CloudWatch logs, and API Gateway integration",
+                "category": "compute",
                 "complexity": "intermediate",
                 "files": ["main.tf", "variables.tf", "outputs.tf"]
             },
             {
                 "name": "EKS Cluster",
-                "description": "Complete EKS cluster with node groups and IRSA",
+                "description": "Complete EKS cluster with node groups, IRSA, and add-ons",
                 "category": "compute",
                 "complexity": "advanced",
                 "files": ["main.tf", "variables.tf", "outputs.tf", "eks-cluster.tf", "eks-nodes.tf"]
+            },
+            {
+                "name": "ECS Cluster",
+                "description": "ECS cluster with Fargate support and service discovery",
+                "category": "compute",
+                "complexity": "intermediate",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            
+            # Storage (Essential)
+            {
+                "name": "S3 Bucket",
+                "description": "S3 bucket with versioning, encryption, lifecycle policies, and CloudFront integration",
+                "category": "storage",
+                "complexity": "beginner",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            {
+                "name": "EFS File System",
+                "description": "Elastic File System with mount targets and backup policies",
+                "category": "storage",
+                "complexity": "intermediate",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            
+            # Database (Essential)
+            {
+                "name": "RDS Database",
+                "description": "MySQL/PostgreSQL RDS with Multi-AZ, read replicas, and automated backups",
+                "category": "database",
+                "complexity": "intermediate",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            {
+                "name": "ElastiCache Redis",
+                "description": "Redis cluster with replication group and subnet group",
+                "category": "database",
+                "complexity": "intermediate",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            {
+                "name": "DynamoDB Table",
+                "description": "DynamoDB table with GSI, backup, and point-in-time recovery",
+                "category": "database",
+                "complexity": "beginner",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            
+            # Load Balancing (Essential)
+            {
+                "name": "Application Load Balancer",
+                "description": "ALB with target groups, health checks, SSL termination, and WAF integration",
+                "category": "networking",
+                "complexity": "intermediate",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            {
+                "name": "Network Load Balancer",
+                "description": "NLB for high-performance TCP/UDP load balancing",
+                "category": "networking",
+                "complexity": "intermediate",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            
+            # Content Delivery & DNS
+            {
+                "name": "CloudFront Distribution",
+                "description": "CloudFront CDN with S3 origin, custom headers, and caching policies",
+                "category": "networking",
+                "complexity": "intermediate",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            {
+                "name": "Route53 DNS",
+                "description": "Route53 hosted zone with health checks and alias records",
+                "category": "networking",
+                "complexity": "beginner",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            
+            # API & Messaging (High Usage)
+            {
+                "name": "API Gateway",
+                "description": "REST API Gateway with Lambda integration, CORS, and API keys",
+                "category": "compute",
+                "complexity": "intermediate",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            {
+                "name": "SQS Queue",
+                "description": "SQS queue with dead letter queue and visibility timeout",
+                "category": "messaging",
+                "complexity": "beginner",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            {
+                "name": "SNS Topic",
+                "description": "SNS topic with subscriptions and delivery policies",
+                "category": "messaging",
+                "complexity": "beginner",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            
+            # Security & Secrets (Essential)
+            {
+                "name": "IAM Roles & Policies",
+                "description": "Reusable IAM roles for EC2, Lambda, and EKS with least privilege policies",
+                "category": "security",
+                "complexity": "intermediate",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            {
+                "name": "Secrets Manager",
+                "description": "AWS Secrets Manager for database credentials and API keys with rotation",
+                "category": "security",
+                "complexity": "beginner",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            {
+                "name": "Parameter Store",
+                "description": "Systems Manager Parameter Store for configuration management",
+                "category": "security",
+                "complexity": "beginner",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            
+            # Monitoring & Logging (Essential)
+            {
+                "name": "CloudWatch Monitoring",
+                "description": "CloudWatch alarms, dashboards, and log groups with metric filters",
+                "category": "monitoring",
+                "complexity": "intermediate",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            
+            # CI/CD & DevOps
+            {
+                "name": "ECR Repository",
+                "description": "Elastic Container Registry with lifecycle policies and image scanning",
+                "category": "devops",
+                "complexity": "beginner",
+                "files": ["main.tf", "variables.tf", "outputs.tf"]
+            },
+            {
+                "name": "CodePipeline",
+                "description": "Complete CI/CD pipeline with CodeBuild, CodeDeploy, and S3 artifacts",
+                "category": "devops",
+                "complexity": "advanced",
+                "files": ["main.tf", "variables.tf", "outputs.tf", "buildspec.yml"]
+            },
+            
+            # Complete Solutions (Popular Architectures)
+            {
+                "name": "3-Tier Web Application",
+                "description": "Complete 3-tier architecture with ALB, ASG, RDS, and CloudFront",
+                "category": "architecture",
+                "complexity": "advanced",
+                "files": ["main.tf", "variables.tf", "outputs.tf", "web-tier.tf", "app-tier.tf", "db-tier.tf"]
+            },
+            {
+                "name": "Serverless Web App",
+                "description": "Serverless architecture with Lambda, API Gateway, DynamoDB, and S3",
+                "category": "architecture",
+                "complexity": "advanced",
+                "files": ["main.tf", "variables.tf", "outputs.tf", "lambda.tf", "api-gateway.tf"]
+            },
+            {
+                "name": "Data Lake Architecture",
+                "description": "S3 data lake with Glue, Athena, and EMR for big data processing",
+                "category": "architecture",
+                "complexity": "advanced",
+                "files": ["main.tf", "variables.tf", "outputs.tf", "data-lake.tf", "glue.tf"]
             }
-        ]
-        
+        ]        
         for pattern_data in predefined_patterns:
             pattern = TerraformPattern(
                 name=pattern_data["name"],
@@ -145,7 +327,1472 @@ class GitHubPatternFetcher:
             patterns.append(pattern)
         
         return patterns
+    # Add these additional methods to your GitHubPatternFetcher class
+    def _get_dynamodb_code(self) -> Dict[str, str]:
+    return {
+            "main.tf": '''# DynamoDB Table
+            resource "aws_dynamodb_table" "main" {
+            name         = "${var.environment}-${var.table_name}"
+            billing_mode = var.billing_mode
+            hash_key     = var.hash_key
+            range_key    = var.range_key
+
+            read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
+            write_capacity = var.billing_mode == "PROVISIONED" ? var.write_capacity : null
+
+            attribute {
+                name = var.hash_key
+                type = var.hash_key_type
+            }
+
+            dynamic "attribute" {
+                for_each = var.range_key != null ? [1] : []
+                content {
+                name = var.range_key
+                type = var.range_key_type
+                }
+            }
+
+            dynamic "attribute" {
+                for_each = var.global_secondary_indexes
+                content {
+                name = attribute.value.hash_key
+                type = attribute.value.hash_key_type
+                }
+            }
+
+            # Global Secondary Indexes
+            dynamic "global_secondary_index" {
+                for_each = var.global_secondary_indexes
+                content {
+                name     = global_secondary_index.value.name
+                hash_key = global_secondary_index.value.hash_key
+                range_key = global_secondary_index.value.range_key
+
+                write_capacity = var.billing_mode == "PROVISIONED" ? global_secondary_index.value.write_capacity : null
+                read_capacity  = var.billing_mode == "PROVISIONED" ? global_secondary_index.value.read_capacity : null
+
+                projection_type    = global_secondary_index.value.projection_type
+                non_key_attributes = global_secondary_index.value.non_key_attributes
+                }
+            }
+
+            # Local Secondary Indexes
+            dynamic "local_secondary_index" {
+                for_each = var.local_secondary_indexes
+                content {
+                name               = local_secondary_index.value.name
+                range_key          = local_secondary_index.value.range_key
+                projection_type    = local_secondary_index.value.projection_type
+                non_key_attributes = local_secondary_index.value.non_key_attributes
+                }
+            }
+
+            # TTL
+            dynamic "ttl" {
+                for_each = var.ttl_attribute_name != null ? [1] : []
+                content {
+                attribute_name = var.ttl_attribute_name
+                enabled        = var.ttl_enabled
+                }
+            }
+
+            # Encryption
+            server_side_encryption {
+                enabled     = var.encryption_enabled
+                kms_key_arn = var.kms_key_arn
+            }
+
+            # Point in time recovery
+            point_in_time_recovery {
+                enabled = var.point_in_time_recovery
+            }
+
+            # Stream
+            stream_enabled   = var.stream_enabled
+            stream_view_type = var.stream_enabled ? var.stream_view_type : null
+
+            tags = merge(var.common_tags, {
+                Name = "${var.environment}-${var.table_name}"
+            })
+            }
+
+            # Auto Scaling for DynamoDB
+            resource "aws_appautoscaling_target" "read" {
+            count              = var.billing_mode == "PROVISIONED" && var.autoscaling_enabled ? 1 : 0
+            max_capacity       = var.autoscaling_read_max_capacity
+            min_capacity       = var.autoscaling_read_min_capacity
+            resource_id        = "table/${aws_dynamodb_table.main.name}"
+            scalable_dimension = "dynamodb:table:ReadCapacityUnits"
+            service_namespace  = "dynamodb"
+            }
+
+            resource "aws_appautoscaling_policy" "read" {
+            count              = var.billing_mode == "PROVISIONED" && var.autoscaling_enabled ? 1 : 0
+            name               = "${var.environment}-${var.table_name}-read-scaling-policy"
+            policy_type        = "TargetTrackingScaling"
+            resource_id        = aws_appautoscaling_target.read[0].resource_id
+            scalable_dimension = aws_appautoscaling_target.read[0].scalable_dimension
+            service_namespace  = aws_appautoscaling_target.read[0].service_namespace
+
+            target_tracking_scaling_policy_configuration {
+                predefined_metric_specification {
+                predefined_metric_type = "DynamoDBReadCapacityUtilization"
+                }
+                target_value = var.autoscaling_read_target_value
+            }
+            }
+
+            resource "aws_appautoscaling_target" "write" {
+            count              = var.billing_mode == "PROVISIONED" && var.autoscaling_enabled ? 1 : 0
+            max_capacity       = var.autoscaling_write_max_capacity
+            min_capacity       = var.autoscaling_write_min_capacity
+            resource_id        = "table/${aws_dynamodb_table.main.name}"
+            scalable_dimension = "dynamodb:table:WriteCapacityUnits"
+            service_namespace  = "dynamodb"
+            }
+
+            resource "aws_appautoscaling_policy" "write" {
+            count              = var.billing_mode == "PROVISIONED" && var.autoscaling_enabled ? 1 : 0
+            name               = "${var.environment}-${var.table_name}-write-scaling-policy"
+            policy_type        = "TargetTrackingScaling"
+            resource_id        = aws_appautoscaling_target.write[0].resource_id
+            scalable_dimension = aws_appautoscaling_target.write[0].scalable_dimension
+            service_namespace  = aws_appautoscaling_target.write[0].service_namespace
+
+            target_tracking_scaling_policy_configuration {
+                predefined_metric_specification {
+                predefined_metric_type = "DynamoDBWriteCapacityUtilization"
+                }
+                target_value = var.autoscaling_write_target_value
+            }
+            }''',
+                    "variables.tf": '''variable "environment" {
+            description = "Environment name"
+            type        = string
+            default     = "dev"
+            }
+
+            variable "table_name" {
+            description = "Name of the DynamoDB table"
+            type        = string
+            }
+
+            variable "billing_mode" {
+            description = "Billing mode for the table"
+            type        = string
+            default     = "PAY_PER_REQUEST"
+            validation {
+                condition     = contains(["PROVISIONED", "PAY_PER_REQUEST"], var.billing_mode)
+                error_message = "Billing mode must be PROVISIONED or PAY_PER_REQUEST."
+            }
+            }
+
+            variable "hash_key" {
+            description = "Hash key (partition key) for the table"
+            type        = string
+            }
+
+            variable "hash_key_type" {
+            description = "Hash key attribute type"
+            type        = string
+            default     = "S"
+            }
+
+            variable "range_key" {
+            description = "Range key (sort key) for the table"
+            type        = string
+            default     = null
+            }
+
+            variable "range_key_type" {
+            description = "Range key attribute type"
+            type        = string
+            default     = "S"
+            }
+
+            variable "read_capacity" {
+            description = "Read capacity units"
+            type        = number
+            default     = 5
+            }
+
+            variable "write_capacity" {
+            description = "Write capacity units"
+            type        = number
+            default     = 5
+            }
+
+            variable "global_secondary_indexes" {
+            description = "Global secondary indexes"
+            type = list(object({
+                name               = string
+                hash_key           = string
+                hash_key_type      = string
+                range_key          = string
+                projection_type    = string
+                non_key_attributes = list(string)
+                read_capacity      = number
+                write_capacity     = number
+            }))
+            default = []
+            }
+
+            variable "local_secondary_indexes" {
+            description = "Local secondary indexes"
+            type = list(object({
+                name               = string
+                range_key          = string
+                projection_type    = string
+                non_key_attributes = list(string)
+            }))
+            default = []
+            }
+
+            variable "ttl_attribute_name" {
+            description = "TTL attribute name"
+            type        = string
+            default     = null
+            }
+
+            variable "ttl_enabled" {
+            description = "Enable TTL"
+            type        = bool
+            default     = true
+            }
+
+            variable "encryption_enabled" {
+            description = "Enable server-side encryption"
+            type        = bool
+            default     = true
+            }
+
+            variable "kms_key_arn" {
+            description = "KMS key ARN for encryption"
+            type        = string
+            default     = null
+            }
+
+            variable "point_in_time_recovery" {
+            description = "Enable point in time recovery"
+            type        = bool
+            default     = true
+            }
+
+            variable "stream_enabled" {
+            description = "Enable DynamoDB streams"
+            type        = bool
+            default     = false
+            }
+
+            variable "stream_view_type" {
+            description = "Stream view type"
+            type        = string
+            default     = "NEW_AND_OLD_IMAGES"
+            }
+
+            variable "autoscaling_enabled" {
+            description = "Enable auto scaling"
+            type        = bool
+            default     = false
+            }
+
+            variable "autoscaling_read_min_capacity" {
+            description = "Auto scaling read min capacity"
+            type        = number
+            default     = 5
+            }
+
+            variable "autoscaling_read_max_capacity" {
+            description = "Auto scaling read max capacity"
+            type        = number
+            default     = 100
+            }
+
+            variable "autoscaling_read_target_value" {
+            description = "Auto scaling read target value"
+            type        = number
+            default     = 70
+            }
+
+            variable "autoscaling_write_min_capacity" {
+            description = "Auto scaling write min capacity"
+            type        = number
+            default     = 5
+            }
+
+            variable "autoscaling_write_max_capacity" {
+            description = "Auto scaling write max capacity"
+            type        = number
+            default     = 100
+            }
+
+            variable "autoscaling_write_target_value" {
+            description = "Auto scaling write target value"
+            type        = number
+            default     = 70
+            }
+
+            variable "common_tags" {
+            description = "Common tags for all resources"
+            type        = map(string)
+            default = {
+                Terraform   = "true"
+                Environment = "dev"
+            }
+            }''',
+                    "outputs.tf": '''output "table_name" {
+            description = "DynamoDB table name"
+            value       = aws_dynamodb_table.main.name
+            }
+
+            output "table_id" {
+            description = "DynamoDB table ID"
+            value       = aws_dynamodb_table.main.id
+            }
+
+            output "table_arn" {
+            description = "DynamoDB table ARN"
+            value       = aws_dynamodb_table.main.arn
+            }
+
+            output "table_stream_arn" {
+            description = "DynamoDB table stream ARN"
+            value       = aws_dynamodb_table.main.stream_arn
+            }
+
+            output "table_stream_label" {
+            description = "DynamoDB table stream label"
+            value       = aws_dynamodb_table.main.stream_label
+            }'''
+                }
+
+            def _get_security_groups_code(self) -> Dict[str, str]:
+                return {
+                    "main.tf": '''# Web Tier Security Group
+            resource "aws_security_group" "web" {
+            name_prefix = "${var.environment}-web-"
+            vpc_id      = var.vpc_id
+            description = "Security group for web tier"
+
+            # HTTP access
+            ingress {
+                from_port   = 80
+                to_port     = 80
+                protocol    = "tcp"
+                cidr_blocks = ["0.0.0.0/0"]
+                description = "HTTP"
+            }
+
+            # HTTPS access
+            ingress {
+                from_port   = 443
+                to_port     = 443
+                protocol    = "tcp"
+                cidr_blocks = ["0.0.0.0/0"]
+                description = "HTTPS"
+            }
+
+            # SSH access (restricted)
+            ingress {
+                from_port   = 22
+                to_port     = 22
+                protocol    = "tcp"
+                cidr_blocks = var.ssh_allowed_cidrs
+                description = "SSH"
+            }
+
+            egress {
+                from_port   = 0
+                to_port     = 0
+                protocol    = "-1"
+                cidr_blocks = ["0.0.0.0/0"]
+                description = "All outbound traffic"
+            }
+
+            tags = merge(var.common_tags, {
+                Name = "${var.environment}-web-sg"
+                Tier = "Web"
+            })
+            }
+
+            # Application Tier Security Group
+            resource "aws_security_group" "app" {
+            name_prefix = "${var.environment}-app-"
+            vpc_id      = var.vpc_id
+            description = "Security group for application tier"
+
+            # Allow traffic from web tier
+            ingress {
+                from_port       = var.app_port
+                to_port         = var.app_port
+                protocol        = "tcp"
+                security_groups = [aws_security_group.web.id]
+                description     = "Application port from web tier"
+            }
+
+            # SSH access (restricted)
+            ingress {
+                from_port   = 22
+                to_port     = 22
+                protocol    = "tcp"
+                cidr_blocks = var.ssh_allowed_cidrs
+                description = "SSH"
+            }
+
+            egress {
+                from_port   = 0
+                to_port     = 0
+                protocol    = "-1"
+                cidr_blocks = ["0.0.0.0/0"]
+                description = "All outbound traffic"
+            }
+
+            tags = merge(var.common_tags, {
+                Name = "${var.environment}-app-sg"
+                Tier = "Application"
+            })
+            }
+
+            # Database Tier Security Group
+            resource "aws_security_group" "db" {
+            name_prefix = "${var.environment}-db-"
+            vpc_id      = var.vpc_id
+            description = "Security group for database tier"
+
+            # MySQL/Aurora access from app tier
+            ingress {
+                from_port       = 3306
+                to_port         = 3306
+                protocol        = "tcp"
+                security_groups = [aws_security_group.app.id]
+                description     = "MySQL from application tier"
+            }
+
+            # PostgreSQL access from app tier
+            ingress {
+                from_port       = 5432
+                to_port         = 5432
+                protocol        = "tcp"
+                security_groups = [aws_security_group.app.id]
+                description     = "PostgreSQL from application tier"
+            }
+
+            # Redis access from app tier
+            ingress {
+                from_port       = 6379
+                to_port         = 6379
+                protocol        = "tcp"
+                security_groups = [aws_security_group.app.id]
+                description     = "Redis from application tier"
+            }
+
+            tags = merge(var.common_tags, {
+                Name = "${var.environment}-db-sg"
+                Tier = "Database"
+            })
+            }
+
+            # ALB Security Group
+            resource "aws_security_group" "alb" {
+            name_prefix = "${var.environment}-alb-"
+            vpc_id      = var.vpc_id
+            description = "Security group for Application Load Balancer"
+
+            # HTTP access
+            ingress {
+                from_port   = 80
+                to_port     = 80
+                protocol    = "tcp"
+                cidr_blocks = ["0.0.0.0/0"]
+                description = "HTTP"
+            }
+
+            # HTTPS access
+            ingress {
+                from_port   = 443
+                to_port     = 443
+                protocol    = "tcp"
+                cidr_blocks = ["0.0.0.0/0"]
+                description = "HTTPS"
+            }
+
+            egress {
+                from_port   = 0
+                to_port     = 0
+                protocol    = "-1"
+                cidr_blocks = ["0.0.0.0/0"]
+                description = "All outbound traffic"
+            }
+
+            tags = merge(var.common_tags, {
+                Name = "${var.environment}-alb-sg"
+                Tier = "Load Balancer"
+            })
+            }
+
+            # EKS Node Group Security Group
+            resource "aws_security_group" "eks_nodes" {
+            count       = var.create_eks_sg ? 1 : 0
+            name_prefix = "${var.environment}-eks-nodes-"
+            vpc_id      = var.vpc_id
+            description = "Security group for EKS worker nodes"
+
+            # Allow nodes to communicate with each other
+            ingress {
+                from_port = 0
+                to_port   = 0
+                protocol  = "-1"
+                self      = true
+                description = "Node to node communication"
+            }
+
+            # Allow pods to communicate with the cluster API Server
+            ingress {
+                from_port   = 1025
+                to_port     = 65535
+                protocol    = "tcp"
+                cidr_blocks = var.cluster_endpoint_private_access_cidrs
+                description = "API server to nodes"
+            }
+
+            egress {
+                from_port   = 0
+                to_port     = 0
+                protocol    = "-1"
+                cidr_blocks = ["0.0.0.0/0"]
+                description = "All outbound traffic"
+            }
+
+            tags = merge(var.common_tags, {
+                Name = "${var.environment}-eks-nodes-sg"
+                Tier = "EKS Nodes"
+            })
+            }
+
+            # Lambda Security Group
+            resource "aws_security_group" "lambda" {
+            count       = var.create_lambda_sg ? 1 : 0
+            name_prefix = "${var.environment}-lambda-"
+            vpc_id      = var.vpc_id
+            description = "Security group for Lambda functions"
+
+            egress {
+                from_port   = 0
+                to_port     = 0
+                protocol    = "-1"
+                cidr_blocks = ["0.0.0.0/0"]
+                description = "All outbound traffic"
+            }
+
+            tags = merge(var.common_tags, {
+                Name = "${var.environment}-lambda-sg"
+                Tier = "Lambda"
+            })
+            }''',
+                    "variables.tf": '''variable "environment" {
+            description = "Environment name"
+            type        = string
+            default     = "dev"
+            }
+
+            variable "vpc_id" {
+            description = "VPC ID where security groups will be created"
+            type        = string
+            }
+
+            variable "ssh_allowed_cidrs" {
+            description = "CIDR blocks allowed for SSH access"
+            type        = list(string)
+            default     = ["10.0.0.0/8"]
+            }
+
+            variable "app_port" {
+            description = "Application port number"
+            type        = number
+            default     = 8080
+            }
+
+            variable "create_eks_sg" {
+            description = "Create EKS security group"
+            type        = bool
+            default     = false
+            }
+
+            variable "create_lambda_sg" {
+            description = "Create Lambda security group"
+            type        = bool
+            default     = false
+            }
+
+            variable "cluster_endpoint_private_access_cidrs" {
+            description = "CIDR blocks for EKS cluster endpoint private access"
+            type        = list(string)
+            default     = ["10.0.0.0/8"]
+            }
+
+            variable "common_tags" {
+            description = "Common tags for all resources"
+            type        = map(string)
+            default = {
+                Terraform   = "true"
+                Environment = "dev"
+            }
+            }''',
+                    "outputs.tf": '''output "web_security_group_id" {
+            description = "Web tier security group ID"
+            value       = aws_security_group.web.id
+            }
+
+            output "app_security_group_id" {
+            description = "Application tier security group ID"
+            value       = aws_security_group.app.id
+            }
+
+            output "db_security_group_id" {
+            description = "Database tier security group ID"
+            value       = aws_security_group.db.id
+            }
+
+            output "alb_security_group_id" {
+            description = "ALB security group ID"
+            value       = aws_security_group.alb.id
+            }
+
+            output "eks_nodes_security_group_id" {
+            description = "EKS nodes security group ID"
+            value       = var.create_eks_sg ? aws_security_group.eks_nodes[0].id : null
+            }
+
+            output "lambda_security_group_id" {
+            description = "Lambda security group ID"
+            value       = var.create_lambda_sg ? aws_security_group.lambda[0].id : null
+            }'''
+                }
     
+    
+    def _get_api_gateway_code(self) -> Dict[str, str]:
+        return {
+            "main.tf": '''# API Gateway REST API
+    resource "aws_api_gateway_rest_api" "main" {
+    name        = "${var.environment}-${var.api_name}"
+    description = var.api_description
+
+    endpoint_configuration {
+        types = [var.endpoint_type]
+    }
+
+    tags = merge(var.common_tags, {
+        Name = "${var.environment}-${var.api_name}"
+    })
+    }
+
+    # API Gateway Resource
+    resource "aws_api_gateway_resource" "proxy" {
+    rest_api_id = aws_api_gateway_rest_api.main.id
+    parent_id   = aws_api_gateway_rest_api.main.root_resource_id
+    path_part   = "{proxy+}"
+    }
+
+    # API Gateway Method
+    resource "aws_api_gateway_method" "proxy" {
+    rest_api_id   = aws_api_gateway_rest_api.main.id
+    resource_id   = aws_api_gateway_resource.proxy.id
+    http_method   = "ANY"
+    authorization = var.authorization_type
+    authorizer_id = var.authorization_type == "CUSTOM" ? aws_api_gateway_authorizer.main[0].id : null
+    api_key_required = var.api_key_required
+    }
+
+    # Lambda Integration
+    resource "aws_api_gateway_integration" "lambda" {
+    rest_api_id = aws_api_gateway_rest_api.main.id
+    resource_id = aws_api_gateway_method.proxy.resource_id
+    http_method = aws_api_gateway_method.proxy.http_method
+
+    integration_http_method = "POST"
+    type                    = "AWS_PROXY"
+    uri                     = var.lambda_invoke_arn
+    }
+
+    # CORS Configuration
+    resource "aws_api_gateway_method" "proxy_options" {
+    rest_api_id   = aws_api_gateway_rest_api.main.id
+    resource_id   = aws_api_gateway_resource.proxy.id
+    http_method   = "OPTIONS"
+    authorization = "NONE"
+    }
+
+    resource "aws_api_gateway_integration" "proxy_options" {
+    rest_api_id = aws_api_gateway_rest_api.main.id
+    resource_id = aws_api_gateway_resource.proxy.id
+    http_method = aws_api_gateway_method.proxy_options.http_method
+    type        = "MOCK"
+
+    request_templates = {
+        "application/json" = jsonencode({
+        statusCode = 200
+        })
+    }
+    }
+
+    resource "aws_api_gateway_method_response" "proxy_options" {
+    rest_api_id = aws_api_gateway_rest_api.main.id
+    resource_id = aws_api_gateway_resource.proxy.id
+    http_method = aws_api_gateway_method.proxy_options.http_method
+    status_code = "200"
+
+    response_parameters = {
+        "method.response.header.Access-Control-Allow-Headers" = true
+        "method.response.header.Access-Control-Allow-Methods" = true
+        "method.response.header.Access-Control-Allow-Origin"  = true
+    }
+    }
+
+    resource "aws_api_gateway_integration_response" "proxy_options" {
+    rest_api_id = aws_api_gateway_rest_api.main.id
+    resource_id = aws_api_gateway_resource.proxy.id
+    http_method = aws_api_gateway_method.proxy_options.http_method
+    status_code = aws_api_gateway_method_response.proxy_options.status_code
+
+    response_parameters = {
+        "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST,PUT,DELETE'"
+        "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+    }
+    }
+
+    # API Gateway Deployment
+    resource "aws_api_gateway_deployment" "main" {
+    depends_on = [
+        aws_api_gateway_integration.lambda,
+        aws_api_gateway_integration.proxy_options
+    ]
+
+    rest_api_id = aws_api_gateway_rest_api.main.id
+    stage_name  = var.stage_name
+
+    variables = {
+        deployed_at = timestamp()
+    }
+
+    lifecycle {
+        create_before_destroy = true
+    }
+    }
+
+    # Custom Authorizer (optional)
+    resource "aws_api_gateway_authorizer" "main" {
+    count = var.authorization_type == "CUSTOM" ? 1 : 0
+
+    name                   = "${var.environment}-${var.api_name}-authorizer"
+    rest_api_id            = aws_api_gateway_rest_api.main.id
+    authorizer_uri         = var.authorizer_lambda_arn
+    authorizer_credentials = aws_iam_role.authorizer[0].arn
+    type                   = "TOKEN"
+    }
+
+    # IAM Role for Custom Authorizer
+    resource "aws_iam_role" "authorizer" {
+    count = var.authorization_type == "CUSTOM" ? 1 : 0
+    name  = "${var.environment}-${var.api_name}-authorizer-role"
+
+    assume_role_policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+        {
+            Action = "sts:AssumeRole"
+            Effect = "Allow"
+            Principal = {
+            Service = "apigateway.amazonaws.com"
+            }
+        }
+        ]
+    })
+    }
+
+    resource "aws_iam_role_policy" "authorizer" {
+    count = var.authorization_type == "CUSTOM" ? 1 : 0
+    name  = "${var.environment}-${var.api_name}-authorizer-policy"
+    role  = aws_iam_role.authorizer[0].id
+
+    policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+        {
+            Action   = "lambda:InvokeFunction"
+            Effect   = "Allow"
+            Resource = var.authorizer_lambda_arn
+        }
+        ]
+    })
+    }
+
+    # API Key (optional)
+    resource "aws_api_gateway_api_key" "main" {
+    count = var.create_api_key ? 1 : 0
+    name  = "${var.environment}-${var.api_name}-key"
+
+    tags = var.common_tags
+    }
+
+    # Usage Plan
+    resource "aws_api_gateway_usage_plan" "main" {
+    count = var.create_api_key ? 1 : 0
+    name  = "${var.environment}-${var.api_name}-usage-plan"
+
+    api_stages {
+        api_id = aws_api_gateway_rest_api.main.id
+        stage  = aws_api_gateway_deployment.main.stage_name
+    }
+
+    quota_settings {
+        limit  = var.quota_limit
+        period = var.quota_period
+    }
+
+    throttle_settings {
+        rate_limit  = var.throttle_rate_limit
+        burst_limit = var.throttle_burst_limit
+    }
+
+    tags = var.common_tags
+    }
+
+    resource "aws_api_gateway_usage_plan_key" "main" {
+    count         = var.create_api_key ? 1 : 0
+    key_id        = aws_api_gateway_api_key.main[0].id
+    key_type      = "API_KEY"
+    usage_plan_id = aws_api_gateway_usage_plan.main[0].id
+    }''',
+            "variables.tf": '''variable "environment" {
+    description = "Environment name"
+    type        = string
+    default     = "dev"
+    }
+
+    variable "api_name" {
+    description = "Name of the API Gateway"
+    type        = string
+    }
+
+    variable "api_description" {
+    description = "Description of the API Gateway"
+    type        = string
+    default     = "REST API Gateway"
+    }
+
+    variable "endpoint_type" {
+    description = "API Gateway endpoint type"
+    type        = string
+    default     = "REGIONAL"
+    validation {
+        condition     = contains(["EDGE", "REGIONAL", "PRIVATE"], var.endpoint_type)
+        error_message = "Endpoint type must be EDGE, REGIONAL, or PRIVATE."
+    }
+    }
+
+    variable "stage_name" {
+    description = "Deployment stage name"
+    type        = string
+    default     = "prod"
+    }
+
+    variable "authorization_type" {
+    description = "Authorization type for the method"
+    type        = string
+    default     = "NONE"
+    validation {
+        condition     = contains(["NONE", "AWS_IAM", "CUSTOM", "COGNITO_USER_POOLS"], var.authorization_type)
+        error_message = "Authorization type must be NONE, AWS_IAM, CUSTOM, or COGNITO_USER_POOLS."
+    }
+    }
+
+    variable "api_key_required" {
+    description = "Whether API key is required"
+    type        = bool
+    default     = false
+    }
+
+    variable "lambda_invoke_arn" {
+    description = "Lambda function invoke ARN"
+    type        = string
+    }
+
+    variable "authorizer_lambda_arn" {
+    description = "Custom authorizer Lambda ARN"
+    type        = string
+    default     = null
+    }
+
+    variable "create_api_key" {
+    description = "Create API key and usage plan"
+    type        = bool
+    default     = false
+    }
+
+    variable "quota_limit" {
+    description = "Usage plan quota limit"
+    type        = number
+    default     = 1000
+    }
+
+    variable "quota_period" {
+    description = "Usage plan quota period"
+    type        = string
+    default     = "MONTH"
+    }
+
+    variable "throttle_rate_limit" {
+    description = "Throttle rate limit"
+    type        = number
+    default     = 100
+    }
+
+    variable "throttle_burst_limit" {
+    description = "Throttle burst limit"
+    type        = number
+    default     = 200
+    }
+
+    variable "common_tags" {
+    description = "Common tags for all resources"
+    type        = map(string)
+    default = {
+        Terraform   = "true"
+        Environment = "dev"
+    }
+    }''',
+            "outputs.tf": '''output "api_gateway_id" {
+    description = "API Gateway REST API ID"
+    value       = aws_api_gateway_rest_api.main.id
+    }
+
+    output "api_gateway_arn" {
+    description = "API Gateway REST API ARN"
+    value       = aws_api_gateway_rest_api.main.arn
+    }
+
+    output "api_gateway_execution_arn" {
+    description = "API Gateway execution ARN"
+    value       = aws_api_gateway_rest_api.main.execution_arn
+    }
+
+    output "api_gateway_invoke_url" {
+    description = "API Gateway invoke URL"
+    value       = aws_api_gateway_deployment.main.invoke_url
+    }
+
+    output "api_key_id" {
+    description = "API Key ID"
+    value       = var.create_api_key ? aws_api_gateway_api_key.main[0].id : null
+    }
+
+    output "usage_plan_id" {
+    description = "Usage Plan ID"
+    value       = var.create_api_key ? aws_api_gateway_usage_plan.main[0].id : null
+    }'''
+        }
+
+    def _get_sqs_code(self) -> Dict[str, str]:
+        return {
+            "main.tf": '''# SQS Queue
+    resource "aws_sqs_queue" "main" {
+    name                       = "${var.environment}-${var.queue_name}"
+    delay_seconds              = var.delay_seconds
+    max_message_size           = var.max_message_size
+    message_retention_seconds  = var.message_retention_seconds
+    receive_wait_time_seconds  = var.receive_wait_time_seconds
+    visibility_timeout_seconds = var.visibility_timeout_seconds
+
+    # KMS encryption
+    kms_master_key_id                 = var.kms_master_key_id
+    kms_data_key_reuse_period_seconds = var.kms_data_key_reuse_period_seconds
+
+    # Dead Letter Queue
+    redrive_policy = var.create_dlq ? jsonencode({
+        deadLetterTargetArn = aws_sqs_queue.dlq[0].arn
+        maxReceiveCount     = var.max_receive_count
+    }) : null
+
+    tags = merge(var.common_tags, {
+        Name = "${var.environment}-${var.queue_name}"
+    })
+    }
+
+    # Dead Letter Queue
+    resource "aws_sqs_queue" "dlq" {
+    count = var.create_dlq ? 1 : 0
+    name  = "${var.environment}-${var.queue_name}-dlq"
+
+    kms_master_key_id                 = var.kms_master_key_id
+    kms_data_key_reuse_period_seconds = var.kms_data_key_reuse_period_seconds
+
+    tags = merge(var.common_tags, {
+        Name = "${var.environment}-${var.queue_name}-dlq"
+    })
+    }
+
+    # SQS Queue Policy
+    resource "aws_sqs_queue_policy" "main" {
+    count     = length(var.allowed_principals) > 0 ? 1 : 0
+    queue_url = aws_sqs_queue.main.id
+
+    policy = jsonencode({
+        Version = "2012-10-17"
+        Id      = "${aws_sqs_queue.main.arn}/SQSDefaultPolicy"
+        Statement = [
+        {
+            Sid    = "AllowPrincipals"
+            Effect = "Allow"
+            Principal = {
+            AWS = var.allowed_principals
+            }
+            Action = [
+            "sqs:SendMessage",
+            "sqs:ReceiveMessage",
+            "sqs:DeleteMessage",
+            "sqs:GetQueueAttributes"
+            ]
+            Resource = aws_sqs_queue.main.arn
+        }
+        ]
+    })
+    }
+
+    # CloudWatch Alarms
+    resource "aws_cloudwatch_metric_alarm" "queue_depth" {
+    count = var.create_alarms ? 1 : 0
+
+    alarm_name          = "${var.environment}-${var.queue_name}-depth"
+    comparison_operator = "GreaterThanThreshold"
+    evaluation_periods  = "2"
+    metric_name         = "ApproximateNumberOfVisibleMessages"
+    namespace           = "AWS/SQS"
+    period              = "300"
+    statistic           = "Average"
+    threshold           = var.alarm_queue_depth_threshold
+    alarm_description   = "This metric monitors SQS queue depth"
+    alarm_actions       = var.alarm_sns_topic_arn != null ? [var.alarm_sns_topic_arn] : []
+
+    dimensions = {
+        QueueName = aws_sqs_queue.main.name
+    }
+
+    tags = var.common_tags
+    }
+
+    resource "aws_cloudwatch_metric_alarm" "dlq_depth" {
+    count = var.create_dlq && var.create_alarms ? 1 : 0
+
+    alarm_name          = "${var.environment}-${var.queue_name}-dlq-depth"
+    comparison_operator = "GreaterThanThreshold"
+    evaluation_periods  = "1"
+    metric_name         = "ApproximateNumberOfVisibleMessages"
+    namespace           = "AWS/SQS"
+    period              = "300"
+    statistic           = "Average"
+    threshold           = "0"
+    alarm_description   = "This metric monitors SQS DLQ depth"
+    alarm_actions       = var.alarm_sns_topic_arn != null ? [var.alarm_sns_topic_arn] : []
+
+    dimensions = {
+        QueueName = aws_sqs_queue.dlq[0].name
+    }
+
+    tags = var.common_tags
+    }''',
+            "variables.tf": '''variable "environment" {
+    description = "Environment name"
+    type        = string
+    default     = "dev"
+    }
+
+    variable "queue_name" {
+    description = "Name of the SQS queue"
+    type        = string
+    }
+
+    variable "delay_seconds" {
+    description = "Delay seconds for message delivery"
+    type        = number
+    default     = 0
+    }
+
+    variable "max_message_size" {
+    description = "Maximum message size in bytes"
+    type        = number
+    default     = 262144
+    }
+
+    variable "message_retention_seconds" {
+    description = "Message retention period in seconds"
+    type        = number
+    default     = 1209600
+    }
+
+    variable "receive_wait_time_seconds" {
+    description = "Long polling wait time in seconds"
+    type        = number
+    default     = 0
+    }
+
+    variable "visibility_timeout_seconds" {
+    description = "Visibility timeout in seconds"
+    type        = number
+    default     = 30
+    }
+
+    variable "kms_master_key_id" {
+    description = "KMS key ID for encryption"
+    type        = string
+    default     = "alias/aws/sqs"
+    }
+
+    variable "kms_data_key_reuse_period_seconds" {
+    description = "KMS data key reuse period"
+    type        = number
+    default     = 300
+    }
+
+    variable "create_dlq" {
+    description = "Create dead letter queue"
+    type        = bool
+    default     = true
+    }
+
+    variable "max_receive_count" {
+    description = "Maximum receive count before moving to DLQ"
+    type        = number
+    default     = 3
+    }
+
+    variable "allowed_principals" {
+    description = "List of allowed principals for queue access"
+    type        = list(string)
+    default     = []
+    }
+
+    variable "create_alarms" {
+    description = "Create CloudWatch alarms"
+    type        = bool
+    default     = true
+    }
+
+    variable "alarm_queue_depth_threshold" {
+    description = "Threshold for queue depth alarm"
+    type        = number
+    default     = 100
+    }
+
+    variable "alarm_sns_topic_arn" {
+    description = "SNS topic ARN for alarm notifications"
+    type        = string
+    default     = null
+    }
+
+    variable "common_tags" {
+    description = "Common tags for all resources"
+    type        = map(string)
+    default = {
+        Terraform   = "true"
+        Environment = "dev"
+    }
+    }''',
+            "outputs.tf": '''output "queue_id" {
+    description = "SQS queue ID"
+    value       = aws_sqs_queue.main.id
+    }
+
+    output "queue_arn" {
+    description = "SQS queue ARN"
+    value       = aws_sqs_queue.main.arn
+    }
+
+    output "queue_url" {
+    description = "SQS queue URL"
+    value       = aws_sqs_queue.main.url
+    }
+
+    output "queue_name" {
+    description = "SQS queue name"
+    value       = aws_sqs_queue.main.name
+    }
+
+    output "dlq_id" {
+    description = "Dead letter queue ID"
+    value       = var.create_dlq ? aws_sqs_queue.dlq[0].id : null
+    }
+
+    output "dlq_arn" {
+    description = "Dead letter queue ARN"
+    value       = var.create_dlq ? aws_sqs_queue.dlq[0].arn : null
+    }
+
+    output "dlq_url" {
+    description = "Dead letter queue URL"
+    value       = var.create_dlq ? aws_sqs_queue.dlq[0].url : null
+    }'''
+        }
+
+    def _get_sns_code(self) -> Dict[str, str]:
+        return {
+            "main.tf": '''# SNS Topic
+    resource "aws_sns_topic" "main" {
+    name         = "${var.environment}-${var.topic_name}"
+    display_name = var.display_name
+
+    # KMS encryption
+    kms_master_key_id = var.kms_master_key_id
+
+    # Delivery policy
+    delivery_policy = var.delivery_policy
+
+    tags = merge(var.common_tags, {
+        Name = "${var.environment}-${var.topic_name}"
+    })
+    }
+
+    # SNS Topic Policy
+    resource "aws_sns_topic_policy" "main" {
+    count = length(var.allowed_principals) > 0 ? 1 : 0
+    arn   = aws_sns_topic.main.arn
+
+    policy = jsonencode({
+        Version = "2012-10-17"
+        Id      = "${aws_sns_topic.main.arn}/SNSDefaultPolicy"
+        Statement = [
+        {
+            Sid    = "AllowPrincipals"
+            Effect = "Allow"
+            Principal = {
+            AWS = var.allowed_principals
+            }
+            Action = [
+            "sns:Publish",
+            "sns:GetTopicAttributes",
+            "sns:SetTopicAttributes",
+            "sns:AddPermission",
+            "sns:RemovePermission",
+            "sns:DeleteTopic",
+            "sns:Subscribe",
+            "sns:ListSubscriptionsByTopic"
+            ]
+            Resource = aws_sns_topic.main.arn
+        }
+        ]
+    })
+    }
+
+    # Email Subscriptions
+    resource "aws_sns_topic_subscription" "email" {
+    count = length(var.email_subscriptions)
+
+    topic_arn = aws_sns_topic.main.arn
+    protocol  = "email"
+    endpoint  = var.email_subscriptions[count.index]
+    }
+
+    # SMS Subscriptions
+    resource "aws_sns_topic_subscription" "sms" {
+    count = length(var.sms_subscriptions)
+
+    topic_arn = aws_sns_topic.main.arn
+    protocol  = "sms"
+    endpoint  = var.sms_subscriptions[count.index]
+    }
+
+    # Lambda Subscriptions
+    resource "aws_sns_topic_subscription" "lambda" {
+    count = length(var.lambda_subscriptions)
+
+    topic_arn = aws_sns_topic.main.arn
+    protocol  = "lambda"
+    endpoint  = var.lambda_subscriptions[count.index].arn
+
+    filter_policy = var.lambda_subscriptions[count.index].filter_policy
+    }
+
+    # Lambda permissions for SNS
+    resource "aws_lambda_permission" "sns" {
+    count = length(var.lambda_subscriptions)
+
+    statement_id  = "AllowExecutionFromSNS-${count.index}"
+    action        = "lambda:InvokeFunction"
+    function_name = var.lambda_subscriptions[count.index].arn
+    principal     = "sns.amazonaws.com"
+    source_arn    = aws_sns_topic.main.arn
+    }
+
+    # SQS Subscriptions
+    resource "aws_sns_topic_subscription" "sqs" {
+    count = length(var.sqs_subscriptions)
+
+    topic_arn = aws_sns_topic.main.arn
+    protocol  = "sqs"
+    endpoint  = var.sqs_subscriptions[count.index].arn
+
+    filter_policy = var.sqs_subscriptions[count.index].filter_policy
+    }
+
+    # SQS queue policies for SNS
+    resource "aws_sqs_queue_policy" "sns" {
+    count     = length(var.sqs_subscriptions)
+    queue_url = var.sqs_subscriptions[count.index].url
+
+    policy = jsonencode({
+        Version = "2012-10-17"
+        Id      = "${var.sqs_subscriptions[count.index].arn}/SNStoSQSPolicy"
+        Statement = [
+        {
+            Sid    = "AllowSNSMessages"
+            Effect = "Allow"
+            Principal = {
+            Service = "sns.amazonaws.com"
+            }
+            Action   = "sqs:SendMessage"
+            Resource = var.sqs_subscriptions[count.index].arn
+            Condition = {
+            ArnEquals = {
+                "aws:SourceArn" = aws_sns_topic.main.arn
+            }
+            }
+        }
+        ]
+    })
+    }
+
+    # HTTP/HTTPS Subscriptions
+    resource "aws_sns_topic_subscription" "http" {
+    count = length(var.http_subscriptions)
+
+    topic_arn = aws_sns_topic.main.arn
+    protocol  = var.http_subscriptions[count.index].protocol
+    endpoint  = var.http_subscriptions[count.index].endpoint
+
+    filter_policy = var.http_subscriptions[count.index].filter_policy
+    }''',
+            "variables.tf": '''variable "environment" {
+    description = "Environment name"
+    type        = string
+    default     = "dev"
+    }
+
+    variable "topic_name" {
+    description = "Name of the SNS topic"
+    type        = string
+    }
+
+    variable "display_name" {
+    description = "Display name for the SNS topic"
+    type        = string
+    default     = null
+    }
+
+    variable "kms_master_key_id" {
+    description = "KMS key ID for encryption"
+    type        = string
+    default     = "alias/aws/sns"
+    }
+
+    variable "delivery_policy" {
+    description = "SNS delivery policy"
+    type        = string
+    default     = null
+    }
+
+    variable "allowed_principals" {
+    description = "List of allowed principals for topic access"
+    type        = list(string)
+    default     = []
+    }
+
+    variable "email_subscriptions" {
+    description = "List of email addresses to subscribe"
+    type        = list(string)
+    default     = []
+    }
+
+    variable "sms_subscriptions" {
+    description = "List of phone numbers to subscribe"
+    type        = list(string)
+    default     = []
+    }
+
+    variable "lambda_subscriptions" {
+    description = "List of Lambda function subscriptions"
+    type = list(object({
+        arn           = string
+        filter_policy = string
+    }))
+    default = []
+    }
+
+    variable "sqs_subscriptions" {
+    description = "List of SQS queue subscriptions"
+    type = list(object({
+        arn           = string
+        url           = string
+        filter_policy = string
+    }))
+    default = []
+    }
+
+    variable "http_subscriptions" {
+    description = "List of HTTP/HTTPS subscriptions"
+    type = list(object({
+        protocol      = string
+        endpoint      = string
+        filter_policy = string
+    }))
+    default = []
+    }
+
+    variable "common_tags" {
+    description = "Common tags for all resources"
+    type        = map(string)
+    default = {
+        Terraform   = "true"
+        Environment = "dev"
+    }
+    }''',
+            "outputs.tf": '''output "topic_arn" {
+    description = "SNS topic ARN"
+    value       = aws_sns_topic.main.arn
+    }
+
+    output "topic_id" {
+    description = "SNS topic ID"
+    value       = aws_sns_topic.main.id
+    }
+
+    output "topic_name" {
+    description = "SNS topic name"
+    value       = aws_sns_topic.main.name
+    }
+
+    output "email_subscription_arns" {
+    description = "Email subscription ARNs"
+    value       = aws_sns_topic_subscription.email[*].arn
+    }
+
+    output "sms_subscription_arns" {
+    description = "SMS subscription ARNs"
+    value       = aws_sns_topic_subscription.sms[*].arn
+    }
+
+    output "lambda_subscription_arns" {
+    description = "Lambda subscription ARNs"
+    value       = aws_sns_topic_subscription.lambda[*].arn
+    }
+
+    output "sqs_subscription_arns" {
+    description = "SQS subscription ARNs"
+    value       = aws_sns_topic_subscription.sqs[*].arn
+    }'''
+        }
+# Add these methods to your GitHubPatternFetcher class
+
     def get_pattern_code(self, pattern: TerraformPattern) -> Dict[str, str]:
         """Generate sample code for a pattern"""
         if "VPC" in pattern.name:
@@ -156,1080 +1803,968 @@ class GitHubPatternFetcher:
             return self._get_rds_code()
         elif "S3" in pattern.name:
             return self._get_s3_code()
-        elif "Load Balancer" in pattern.name:
+        elif "Application Load Balancer" in pattern.name:
             return self._get_alb_code()
         elif "EKS" in pattern.name:
             return self._get_eks_code()
+        # New patterns
+        elif "Lambda" in pattern.name:
+            return self._get_lambda_code()
+        elif "Auto Scaling" in pattern.name:
+            return self._get_asg_code()
+        elif "CloudFront" in pattern.name:
+            return self._get_cloudfront_code()
+        elif "API Gateway" in pattern.name:
+            return self._get_api_gateway_code()
+        elif "SQS" in pattern.name:
+            return self._get_sqs_code()
+        elif "SNS" in pattern.name:
+            return self._get_sns_code()
+        elif "IAM" in pattern.name:
+            return self._get_iam_code()
+        elif "Secrets Manager" in pattern.name:
+            return self._get_secrets_manager_code()
+        elif "CloudWatch" in pattern.name:
+            return self._get_cloudwatch_code()
+        elif "DynamoDB" in pattern.name:
+            return self._get_dynamodb_code()
+        elif "ElastiCache" in pattern.name:
+            return self._get_elasticache_code()
+        elif "Route53" in pattern.name:
+            return self._get_route53_code()
+        elif "Security Groups" in pattern.name:
+            return self._get_security_groups_code()
+        elif "3-Tier" in pattern.name:
+            return self._get_three_tier_code()
+        elif "Serverless Web" in pattern.name:
+            return self._get_serverless_webapp_code()
         else:
             return self._get_basic_code(pattern.name)
-    
-    def _get_vpc_code(self) -> Dict[str, str]:
+
+    def _get_lambda_code(self) -> Dict[str, str]:
         return {
-            "main.tf": '''# VPC Module
-resource "aws_vpc" "main" {
-  cidr_block           = var.vpc_cidr
-  enable_dns_hostnames = true
-  enable_dns_support   = true
+            "main.tf": '''# Lambda Function
+    resource "aws_lambda_function" "main" {
+    filename         = var.lambda_zip_path
+    function_name    = "${var.environment}-${var.function_name}"
+    role            = aws_iam_role.lambda.arn
+    handler         = var.handler
+    source_code_hash = filebase64sha256(var.lambda_zip_path)
+    runtime         = var.runtime
+    timeout         = var.timeout
+    memory_size     = var.memory_size
 
-  tags = merge(var.common_tags, {
-    Name = "${var.environment}-vpc"
-  })
-}
-
-# Internet Gateway
-resource "aws_internet_gateway" "main" {
-  vpc_id = aws_vpc.main.id
-
-  tags = merge(var.common_tags, {
-    Name = "${var.environment}-igw"
-  })
-}
-
-# Public Subnets
-resource "aws_subnet" "public" {
-  count = length(var.public_subnet_cidrs)
-
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.public_subnet_cidrs[count.index]
-  availability_zone       = data.aws_availability_zones.available.names[count.index]
-  map_public_ip_on_launch = true
-
-  tags = merge(var.common_tags, {
-    Name = "${var.environment}-public-subnet-${count.index + 1}"
-    Type = "Public"
-  })
-}
-
-# Private Subnets
-resource "aws_subnet" "private" {
-  count = length(var.private_subnet_cidrs)
-
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.private_subnet_cidrs[count.index]
-  availability_zone = data.aws_availability_zones.available.names[count.index]
-
-  tags = merge(var.common_tags, {
-    Name = "${var.environment}-private-subnet-${count.index + 1}"
-    Type = "Private"
-  })
-}
-
-# NAT Gateway
-resource "aws_eip" "nat" {
-  count = var.enable_nat_gateway ? length(var.public_subnet_cidrs) : 0
-
-  domain = "vpc"
-  depends_on = [aws_internet_gateway.main]
-
-  tags = merge(var.common_tags, {
-    Name = "${var.environment}-nat-eip-${count.index + 1}"
-  })
-}
-
-resource "aws_nat_gateway" "main" {
-  count = var.enable_nat_gateway ? length(var.public_subnet_cidrs) : 0
-
-  allocation_id = aws_eip.nat[count.index].id
-  subnet_id     = aws_subnet.public[count.index].id
-
-  tags = merge(var.common_tags, {
-    Name = "${var.environment}-nat-${count.index + 1}"
-  })
-
-  depends_on = [aws_internet_gateway.main]
-}
-
-# Route Tables
-resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.main.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.main.id
-  }
-
-  tags = merge(var.common_tags, {
-    Name = "${var.environment}-public-rt"
-  })
-}
-
-resource "aws_route_table" "private" {
-  count = var.enable_nat_gateway ? length(var.private_subnet_cidrs) : 1
-
-  vpc_id = aws_vpc.main.id
-
-  dynamic "route" {
-    for_each = var.enable_nat_gateway ? [1] : []
-    content {
-      cidr_block     = "0.0.0.0/0"
-      nat_gateway_id = aws_nat_gateway.main[count.index].id
+    environment {
+        variables = var.environment_variables
     }
-  }
 
-  tags = merge(var.common_tags, {
-    Name = "${var.environment}-private-rt-${count.index + 1}"
-  })
-}
+    vpc_config {
+        subnet_ids         = var.subnet_ids
+        security_group_ids = var.security_group_ids
+    }
 
-# Route Table Associations
-resource "aws_route_table_association" "public" {
-  count = length(var.public_subnet_cidrs)
+    tags = merge(var.common_tags, {
+        Name = "${var.environment}-${var.function_name}"
+    })
+    }
 
-  subnet_id      = aws_subnet.public[count.index].id
-  route_table_id = aws_route_table.public.id
-}
+    # IAM Role for Lambda
+    resource "aws_iam_role" "lambda" {
+    name = "${var.environment}-${var.function_name}-role"
 
-resource "aws_route_table_association" "private" {
-  count = length(var.private_subnet_cidrs)
-
-  subnet_id      = aws_subnet.private[count.index].id
-  route_table_id = aws_route_table.private[var.enable_nat_gateway ? count.index : 0].id
-}
-
-# Data Sources
-data "aws_availability_zones" "available" {
-  state = "available"
-}''',
-            "variables.tf": '''variable "environment" {
-  description = "Environment name"
-  type        = string
-  default     = "dev"
-}
-
-variable "vpc_cidr" {
-  description = "CIDR block for VPC"
-  type        = string
-  default     = "10.0.0.0/16"
-}
-
-variable "public_subnet_cidrs" {
-  description = "CIDR blocks for public subnets"
-  type        = list(string)
-  default     = ["10.0.1.0/24", "10.0.2.0/24"]
-}
-
-variable "private_subnet_cidrs" {
-  description = "CIDR blocks for private subnets"
-  type        = list(string)
-  default     = ["10.0.3.0/24", "10.0.4.0/24"]
-}
-
-variable "enable_nat_gateway" {
-  description = "Enable NAT Gateway for private subnets"
-  type        = bool
-  default     = true
-}
-
-variable "common_tags" {
-  description = "Common tags to apply to all resources"
-  type        = map(string)
-  default = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
-}''',
-            "outputs.tf": '''output "vpc_id" {
-  description = "VPC ID"
-  value       = aws_vpc.main.id
-}
-
-output "vpc_cidr_block" {
-  description = "VPC CIDR block"
-  value       = aws_vpc.main.cidr_block
-}
-
-output "public_subnet_ids" {
-  description = "Public subnet IDs"
-  value       = aws_subnet.public[*].id
-}
-
-output "private_subnet_ids" {
-  description = "Private subnet IDs"
-  value       = aws_subnet.private[*].id
-}
-
-output "internet_gateway_id" {
-  description = "Internet Gateway ID"
-  value       = aws_internet_gateway.main.id
-}
-
-output "nat_gateway_ids" {
-  description = "NAT Gateway IDs"
-  value       = aws_nat_gateway.main[*].id
-}
-
-output "public_route_table_id" {
-  description = "Public route table ID"
-  value       = aws_route_table.public.id
-}
-
-output "private_route_table_ids" {
-  description = "Private route table IDs"
-  value       = aws_route_table.private[*].id
-}'''
+    assume_role_policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+        {
+            Action = "sts:AssumeRole"
+            Effect = "Allow"
+            Principal = {
+            Service = "lambda.amazonaws.com"
+            }
         }
-    
-    def _get_ec2_code(self) -> Dict[str, str]:
-        return {
-            "main.tf": '''# EC2 Instance
-resource "aws_instance" "main" {
-  ami                    = data.aws_ami.amazon_linux.id
-  instance_type          = var.instance_type
-  key_name              = var.key_name
-  vpc_security_group_ids = [aws_security_group.main.id]
-  subnet_id             = var.subnet_id
+        ]
+    })
 
-  root_block_device {
-    volume_type = var.root_volume_type
-    volume_size = var.root_volume_size
-    encrypted   = true
-  }
+    tags = var.common_tags
+    }
 
-  user_data = base64encode(templatefile("${path.module}/user_data.sh", {
-    environment = var.environment
-  }))
+    # Basic Lambda execution policy
+    resource "aws_iam_role_policy_attachment" "lambda_basic" {
+    policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    role       = aws_iam_role.lambda.name
+    }
 
-  tags = merge(var.common_tags, {
-    Name = "${var.environment}-${var.instance_name}"
-  })
-}
+    # VPC execution policy (if VPC is used)
+    resource "aws_iam_role_policy_attachment" "lambda_vpc" {
+    count      = length(var.subnet_ids) > 0 ? 1 : 0
+    policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+    role       = aws_iam_role.lambda.name
+    }
 
-# Security Group
-resource "aws_security_group" "main" {
-  name_prefix = "${var.environment}-${var.instance_name}-"
-  vpc_id      = var.vpc_id
+    # CloudWatch Log Group
+    resource "aws_cloudwatch_log_group" "lambda" {
+    name              = "/aws/lambda/${var.environment}-${var.function_name}"
+    retention_in_days = var.log_retention_days
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = var.allowed_ssh_cidrs
-  }
+    tags = var.common_tags
+    }
 
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = merge(var.common_tags, {
-    Name = "${var.environment}-${var.instance_name}-sg"
-  })
-}
-
-# Data Sources
-data "aws_ami" "amazon_linux" {
-  most_recent = true
-  owners      = ["amazon"]
-
-  filter {
-    name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
-  }
-}''',
+    # Lambda Permission for API Gateway (optional)
+    resource "aws_lambda_permission" "api_gateway" {
+    count         = var.enable_api_gateway ? 1 : 0
+    statement_id  = "AllowAPIGatewayInvoke"
+    action        = "lambda:InvokeFunction"
+    function_name = aws_lambda_function.main.function_name
+    principal     = "apigateway.amazonaws.com"
+    }''',
             "variables.tf": '''variable "environment" {
-  description = "Environment name"
-  type        = string
-  default     = "dev"
-}
+    description = "Environment name"
+    type        = string
+    default     = "dev"
+    }
 
-variable "instance_name" {
-  description = "Name for the EC2 instance"
-  type        = string
-  default     = "web-server"
-}
+    variable "function_name" {
+    description = "Lambda function name"
+    type        = string
+    }
 
-variable "instance_type" {
-  description = "EC2 instance type"
-  type        = string
-  default     = "t3.micro"
-}
+    variable "lambda_zip_path" {
+    description = "Path to Lambda deployment package"
+    type        = string
+    default     = "lambda_function.zip"
+    }
 
-variable "key_name" {
-  description = "AWS key pair name"
-  type        = string
-}
+    variable "handler" {
+    description = "Lambda function handler"
+    type        = string
+    default     = "index.handler"
+    }
 
-variable "vpc_id" {
-  description = "VPC ID where the instance will be created"
-  type        = string
-}
+    variable "runtime" {
+    description = "Lambda runtime"
+    type        = string
+    default     = "python3.9"
+    }
 
-variable "subnet_id" {
-  description = "Subnet ID where the instance will be created"
-  type        = string
-}
+    variable "timeout" {
+    description = "Lambda timeout in seconds"
+    type        = number
+    default     = 30
+    }
 
-variable "allowed_ssh_cidrs" {
-  description = "CIDR blocks allowed for SSH access"
-  type        = list(string)
-  default     = ["10.0.0.0/8"]
-}
+    variable "memory_size" {
+    description = "Lambda memory size in MB"
+    type        = number
+    default     = 128
+    }
 
-variable "root_volume_type" {
-  description = "Root volume type"
-  type        = string
-  default     = "gp3"
-}
+    variable "environment_variables" {
+    description = "Environment variables for Lambda"
+    type        = map(string)
+    default     = {}
+    }
 
-variable "root_volume_size" {
-  description = "Root volume size in GB"
-  type        = number
-  default     = 20
-}
+    variable "subnet_ids" {
+    description = "Subnet IDs for VPC configuration"
+    type        = list(string)
+    default     = []
+    }
 
-variable "common_tags" {
-  description = "Common tags to apply to all resources"
-  type        = map(string)
-  default = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
-}''',
-            "outputs.tf": '''output "instance_id" {
-  description = "EC2 instance ID"
-  value       = aws_instance.main.id
-}
+    variable "security_group_ids" {
+    description = "Security group IDs for VPC configuration"
+    type        = list(string)
+    default     = []
+    }
 
-output "instance_public_ip" {
-  description = "Public IP address of the instance"
-  value       = aws_instance.main.public_ip
-}
+    variable "log_retention_days" {
+    description = "CloudWatch log retention period"
+    type        = number
+    default     = 14
+    }
 
-output "instance_private_ip" {
-  description = "Private IP address of the instance"
-  value       = aws_instance.main.private_ip
-}
+    variable "enable_api_gateway" {
+    description = "Enable API Gateway integration"
+    type        = bool
+    default     = false
+    }
 
-output "security_group_id" {
-  description = "Security group ID"
-  value       = aws_security_group.main.id
-}'''
+    variable "common_tags" {
+    description = "Common tags for all resources"
+    type        = map(string)
+    default = {
+        Terraform   = "true"
+        Environment = "dev"
+    }
+    }''',
+            "outputs.tf": '''output "lambda_function_arn" {
+    description = "Lambda function ARN"
+    value       = aws_lambda_function.main.arn
+    }
+
+    output "lambda_function_name" {
+    description = "Lambda function name"
+    value       = aws_lambda_function.main.function_name
+    }
+
+    output "lambda_invoke_arn" {
+    description = "Lambda function invoke ARN"
+    value       = aws_lambda_function.main.invoke_arn
+    }
+
+    output "lambda_role_arn" {
+    description = "Lambda IAM role ARN"
+    value       = aws_iam_role.lambda.arn
+    }
+
+    output "cloudwatch_log_group" {
+    description = "CloudWatch log group name"
+    value       = aws_cloudwatch_log_group.lambda.name
+    }'''
         }
+
     
-    def _get_s3_code(self) -> Dict[str, str]:
+    
+    
+    def _get_asg_code(self) -> Dict[str, str]:
         return {
-            "main.tf": '''# S3 Bucket
-resource "aws_s3_bucket" "main" {
-  bucket = var.bucket_name
+            "main.tf": '''# Launch Template
+    resource "aws_launch_template" "main" {
+    name_prefix   = "${var.environment}-${var.name}-"
+    image_id      = data.aws_ami.amazon_linux.id
+    instance_type = var.instance_type
+    key_name      = var.key_name
 
-  tags = merge(var.common_tags, {
-    Name = var.bucket_name
-  })
-}
+    vpc_security_group_ids = [aws_security_group.asg.id]
 
-# Bucket Versioning
-resource "aws_s3_bucket_versioning" "main" {
-  bucket = aws_s3_bucket.main.id
-  versioning_configuration {
-    status = var.enable_versioning ? "Enabled" : "Disabled"
-  }
-}
+    user_data = base64encode(templatefile("${path.module}/user_data.sh", {
+        environment = var.environment
+    }))
 
-# Bucket Encryption
-resource "aws_s3_bucket_server_side_encryption_configuration" "main" {
-  bucket = aws_s3_bucket.main.id
-
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
-    }
-    bucket_key_enabled = true
-  }
-}
-
-# Bucket Public Access Block
-resource "aws_s3_bucket_public_access_block" "main" {
-  bucket = aws_s3_bucket.main.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
-
-# Bucket Lifecycle Configuration
-resource "aws_s3_bucket_lifecycle_configuration" "main" {
-  count = var.enable_lifecycle ? 1 : 0
-
-  bucket = aws_s3_bucket.main.id
-
-  rule {
-    id     = "transition_to_ia"
-    status = "Enabled"
-
-    transition {
-      days          = 30
-      storage_class = "STANDARD_IA"
+    block_device_mappings {
+        device_name = "/dev/xvda"
+        ebs {
+        volume_size = var.root_volume_size
+        volume_type = "gp3"
+        encrypted   = true
+        }
     }
 
-    transition {
-      days          = 60
-      storage_class = "GLACIER"
+    iam_instance_profile {
+        name = aws_iam_instance_profile.main.name
     }
 
-    expiration {
-      days = var.object_expiration_days
+    tag_specifications {
+        resource_type = "instance"
+        tags = merge(var.common_tags, {
+        Name = "${var.environment}-${var.name}"
+        })
     }
-  }
-}''',
-            "variables.tf": '''variable "bucket_name" {
-  description = "Name of the S3 bucket"
-  type        = string
-}
 
-variable "enable_versioning" {
-  description = "Enable versioning for the S3 bucket"
-  type        = bool
-  default     = true
-}
+    tags = var.common_tags
+    }
 
-variable "enable_lifecycle" {
-  description = "Enable lifecycle management for the S3 bucket"
-  type        = bool
-  default     = true
-}
+    # Auto Scaling Group
+    resource "aws_autoscaling_group" "main" {
+    name                = "${var.environment}-${var.name}-asg"
+    vpc_zone_identifier = var.subnet_ids
+    target_group_arns   = var.target_group_arns
+    health_check_type   = var.health_check_type
+    health_check_grace_period = var.health_check_grace_period
 
-variable "object_expiration_days" {
-  description = "Number of days after which objects will be deleted"
-  type        = number
-  default     = 365
-}
+    min_size         = var.min_size
+    max_size         = var.max_size
+    desired_capacity = var.desired_capacity
 
-variable "common_tags" {
-  description = "Common tags to apply to all resources"
-  type        = map(string)
-  default = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
-}''',
-            "outputs.tf": '''output "bucket_name" {
-  description = "Name of the S3 bucket"
-  value       = aws_s3_bucket.main.bucket
-}
+    launch_template {
+        id      = aws_launch_template.main.id
+        version = "$Latest"
+    }
 
-output "bucket_arn" {
-  description = "ARN of the S3 bucket"
-  value       = aws_s3_bucket.main.arn
-}
+    enabled_metrics = var.enabled_metrics
 
-output "bucket_domain_name" {
-  description = "Domain name of the S3 bucket"
-  value       = aws_s3_bucket.main.bucket_domain_name
-}'''
+    dynamic "tag" {
+        for_each = var.common_tags
+        content {
+        key                 = tag.key
+        value               = tag.value
+        propagate_at_launch = true
+        }
+    }
+
+    tag {
+        key                 = "Name"
+        value               = "${var.environment}-${var.name}"
+        propagate_at_launch = true
+    }
+    }
+
+    # Security Group
+    resource "aws_security_group" "asg" {
+    name_prefix = "${var.environment}-${var.name}-asg-"
+    vpc_id      = var.vpc_id
+
+    ingress {
+        from_port   = 80
+        to_port     = 80
+        protocol    = "tcp"
+        cidr_blocks = var.allowed_cidrs
+    }
+
+    ingress {
+        from_port   = 443
+        to_port     = 443
+        protocol    = "tcp"
+        cidr_blocks = var.allowed_cidrs
+    }
+
+    ingress {
+        from_port   = 22
+        to_port     = 22
+        protocol    = "tcp"
+        cidr_blocks = var.ssh_allowed_cidrs
+    }
+
+    egress {
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    tags = merge(var.common_tags, {
+        Name = "${var.environment}-${var.name}-asg-sg"
+    })
+    }
+
+    # IAM Instance Profile
+    resource "aws_iam_instance_profile" "main" {
+    name = "${var.environment}-${var.name}-profile"
+    role = aws_iam_role.main.name
+    }
+
+    resource "aws_iam_role" "main" {
+    name = "${var.environment}-${var.name}-role"
+
+    assume_role_policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+        {
+            Action = "sts:AssumeRole"
+            Effect = "Allow"
+            Principal = {
+            Service = "ec2.amazonaws.com"
+            }
+        }
+        ]
+    })
+
+    tags = var.common_tags
+    }
+
+    # CloudWatch Agent policy
+    resource "aws_iam_role_policy_attachment" "cloudwatch_agent" {
+    policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+    role       = aws_iam_role.main.name
+    }
+
+    # SSM policy for Systems Manager
+    resource "aws_iam_role_policy_attachment" "ssm_managed" {
+    policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    role       = aws_iam_role.main.name
+    }
+
+    # Data source for latest Amazon Linux 2 AMI
+    data "aws_ami" "amazon_linux" {
+    most_recent = true
+    owners      = ["amazon"]
+
+    filter {
+        name   = "name"
+        values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+    }
+    }''',
+            "variables.tf": '''variable "environment" {
+    description = "Environment name"
+    type        = string
+    default     = "dev"
+    }
+
+    variable "name" {
+    description = "Name for the Auto Scaling Group"
+    type        = string
+    default     = "web"
+    }
+
+    variable "vpc_id" {
+    description = "VPC ID"
+    type        = string
+    }
+
+    variable "subnet_ids" {
+    description = "Subnet IDs for the Auto Scaling Group"
+    type        = list(string)
+    }
+
+    variable "instance_type" {
+    description = "EC2 instance type"
+    type        = string
+    default     = "t3.micro"
+    }
+
+    variable "key_name" {
+    description = "EC2 Key Pair name"
+    type        = string
+    }
+
+    variable "min_size" {
+    description = "Minimum number of instances"
+    type        = number
+    default     = 1
+    }
+
+    variable "max_size" {
+    description = "Maximum number of instances"
+    type        = number
+    default     = 3
+    }
+
+    variable "desired_capacity" {
+    description = "Desired number of instances"
+    type        = number
+    default     = 2
+    }
+
+    variable "target_group_arns" {
+    description = "Target group ARNs for load balancer"
+    type        = list(string)
+    default     = []
+    }
+
+    variable "health_check_type" {
+    description = "Health check type (EC2 or ELB)"
+    type        = string
+    default     = "ELB"
+    }
+
+    variable "health_check_grace_period" {
+    description = "Health check grace period"
+    type        = number
+    default     = 300
+    }
+
+    variable "root_volume_size" {
+    description = "Root volume size in GB"
+    type        = number
+    default     = 20
+    }
+
+    variable "allowed_cidrs" {
+    description = "CIDR blocks allowed for HTTP/HTTPS access"
+    type        = list(string)
+    default     = ["0.0.0.0/0"]
+    }
+
+    variable "ssh_allowed_cidrs" {
+    description = "CIDR blocks allowed for SSH access"
+    type        = list(string)
+    default     = ["10.0.0.0/8"]
+    }
+
+    variable "enabled_metrics" {
+    description = "List of enabled ASG metrics"
+    type        = list(string)
+    default = [
+        "GroupMinSize",
+        "GroupMaxSize",
+        "GroupDesiredCapacity",
+        "GroupInServiceInstances",
+        "GroupTotalInstances"
+    ]
+    }
+
+    variable "common_tags" {
+    description = "Common tags for all resources"
+    type        = map(string)
+    default = {
+        Terraform   = "true"
+        Environment = "dev"
+    }
+    }''',
+            "outputs.tf": '''output "autoscaling_group_id" {
+    description = "Auto Scaling Group ID"
+    value       = aws_autoscaling_group.main.id
+    }
+
+    output "autoscaling_group_arn" {
+    description = "Auto Scaling Group ARN"
+    value       = aws_autoscaling_group.main.arn
+    }
+
+    output "launch_template_id" {
+    description = "Launch Template ID"
+    value       = aws_launch_template.main.id
+    }
+
+    output "security_group_id" {
+    description = "Security Group ID"
+    value       = aws_security_group.asg.id
+    }
+
+    output "iam_role_arn" {
+    description = "IAM Role ARN"
+    value       = aws_iam_role.main.arn
+    }'''
+        }
+
+    def _get_cloudfront_code(self) -> Dict[str, str]:
+        return {
+            "main.tf": '''# S3 Bucket for CloudFront Origin (optional)
+    resource "aws_s3_bucket" "origin" {
+    count  = var.create_s3_origin ? 1 : 0
+    bucket = var.origin_bucket_name
+
+    tags = merge(var.common_tags, {
+        Name = var.origin_bucket_name
+    })
+    }
+
+    resource "aws_s3_bucket_versioning" "origin" {
+    count  = var.create_s3_origin ? 1 : 0
+    bucket = aws_s3_bucket.origin[0].id
+    versioning_configuration {
+        status = "Enabled"
+    }
+    }
+
+    resource "aws_s3_bucket_server_side_encryption_configuration" "origin" {
+    count  = var.create_s3_origin ? 1 : 0
+    bucket = aws_s3_bucket.origin[0].id
+
+    rule {
+        apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+        }
+    }
+    }
+
+    # Origin Access Control
+    resource "aws_cloudfront_origin_access_control" "main" {
+    count                             = var.create_s3_origin ? 1 : 0
+    name                              = "${var.environment}-${var.distribution_name}-oac"
+    description                       = "OAC for ${var.distribution_name}"
+    origin_access_control_origin_type = "s3"
+    signing_behavior                  = "always"
+    signing_protocol                  = "sigv4"
+    }
+
+    # CloudFront Distribution
+    resource "aws_cloudfront_distribution" "main" {
+    origin {
+        domain_name              = var.create_s3_origin ? aws_s3_bucket.origin[0].bucket_regional_domain_name : var.origin_domain_name
+        origin_id                = var.origin_id
+        origin_access_control_id = var.create_s3_origin ? aws_cloudfront_origin_access_control.main[0].id : null
+
+        dynamic "custom_origin_config" {
+        for_each = var.create_s3_origin ? [] : [1]
+        content {
+            http_port              = var.origin_http_port
+            https_port             = var.origin_https_port
+            origin_protocol_policy = var.origin_protocol_policy
+            origin_ssl_protocols   = var.origin_ssl_protocols
+        }
+        }
+    }
+
+    enabled             = true
+    is_ipv6_enabled     = var.ipv6_enabled
+    comment             = var.comment
+    default_root_object = var.default_root_object
+
+    aliases = var.aliases
+
+    default_cache_behavior {
+        allowed_methods  = var.allowed_methods
+        cached_methods   = var.cached_methods
+        target_origin_id = var.origin_id
+
+        forwarded_values {
+        query_string = var.forward_query_string
+        cookies {
+            forward = var.forward_cookies
+        }
+        headers = var.forward_headers
+        }
+
+        viewer_protocol_policy = var.viewer_protocol_policy
+        min_ttl                = var.min_ttl
+        default_ttl            = var.default_ttl
+        max_ttl                = var.max_ttl
+        compress               = var.compress
+    }
+
+    # Custom error responses
+    dynamic "custom_error_response" {
+        for_each = var.custom_error_responses
+        content {
+        error_code            = custom_error_response.value.error_code
+        response_code         = custom_error_response.value.response_code
+        response_page_path    = custom_error_response.value.response_page_path
+        error_caching_min_ttl = custom_error_response.value.error_caching_min_ttl
+        }
+    }
+
+    price_class = var.price_class
+
+    restrictions {
+        geo_restriction {
+        restriction_type = var.geo_restriction_type
+        locations        = var.geo_restriction_locations
+        }
+    }
+
+    viewer_certificate {
+        cloudfront_default_certificate = var.use_default_certificate
+        acm_certificate_arn            = var.ssl_certificate_arn
+        ssl_support_method             = var.ssl_certificate_arn != null ? "sni-only" : null
+        minimum_protocol_version       = var.ssl_certificate_arn != null ? "TLSv1.2_2021" : null
+    }
+
+    web_acl_id = var.web_acl_id
+
+    tags = merge(var.common_tags, {
+        Name = "${var.environment}-${var.distribution_name}"
+    })
+    }
+
+    # S3 Bucket Policy for CloudFront (if using S3 origin)
+    resource "aws_s3_bucket_policy" "origin" {
+    count  = var.create_s3_origin ? 1 : 0
+    bucket = aws_s3_bucket.origin[0].id
+
+    policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+        {
+            Sid    = "AllowCloudFrontServicePrincipal"
+            Effect = "Allow"
+            Principal = {
+            Service = "cloudfront.amazonaws.com"
+            }
+            Action   = "s3:GetObject"
+            Resource = "${aws_s3_bucket.origin[0].arn}/*"
+            Condition = {
+            StringEquals = {
+                "AWS:SourceArn" = aws_cloudfront_distribution.main.arn
+            }
+            }
+        }
+        ]
+    })
+    }''',
+            "variables.tf": '''variable "environment" {
+    description = "Environment name"
+    type        = string
+    default     = "dev"
+    }
+
+    variable "distribution_name" {
+    description = "Name for the CloudFront distribution"
+    type        = string
+    }
+
+    variable "create_s3_origin" {
+    description = "Create S3 bucket as origin"
+    type        = bool
+    default     = true
+    }
+
+    variable "origin_bucket_name" {
+    description = "S3 bucket name for origin (if creating)"
+    type        = string
+    default     = null
+    }
+
+    variable "origin_domain_name" {
+    description = "Origin domain name (if not using S3)"
+    type        = string
+    default     = null
+    }
+
+    variable "origin_id" {
+    description = "Origin ID"
+    type        = string
+    default     = "primary-origin"
+    }
+
+    variable "origin_http_port" {
+    description = "HTTP port for custom origin"
+    type        = number
+    default     = 80
+    }
+
+    variable "origin_https_port" {
+    description = "HTTPS port for custom origin"
+    type        = number
+    default     = 443
+    }
+
+    variable "origin_protocol_policy" {
+    description = "Origin protocol policy"
+    type        = string
+    default     = "https-only"
+    }
+
+    variable "origin_ssl_protocols" {
+    description = "SSL protocols for origin"
+    type        = list(string)
+    default     = ["TLSv1.2"]
+    }
+
+    variable "aliases" {
+    description = "Alternate domain names (CNAMEs)"
+    type        = list(string)
+    default     = []
+    }
+
+    variable "comment" {
+    description = "Comment for the distribution"
+    type        = string
+    default     = "CloudFront Distribution"
+    }
+
+    variable "default_root_object" {
+    description = "Default root object"
+    type        = string
+    default     = "index.html"
+    }
+
+    variable "ipv6_enabled" {
+    description = "Enable IPv6"
+    type        = bool
+    default     = true
+    }
+
+    variable "allowed_methods" {
+    description = "Allowed HTTP methods"
+    type        = list(string)
+    default     = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    }
+
+    variable "cached_methods" {
+    description = "Cached HTTP methods"
+    type        = list(string)
+    default     = ["GET", "HEAD"]
+    }
+
+    variable "viewer_protocol_policy" {
+    description = "Viewer protocol policy"
+    type        = string
+    default     = "redirect-to-https"
+    }
+
+    variable "forward_query_string" {
+    description = "Forward query strings"
+    type        = bool
+    default     = false
+    }
+
+    variable "forward_cookies" {
+    description = "Forward cookies policy"
+    type        = string
+    default     = "none"
+    }
+
+    variable "forward_headers" {
+    description = "Headers to forward to origin"
+    type        = list(string)
+    default     = []
+    }
+
+    variable "min_ttl" {
+    description = "Minimum TTL"
+    type        = number
+    default     = 0
+    }
+
+    variable "default_ttl" {
+    description = "Default TTL"
+    type        = number
+    default     = 3600
+    }
+
+    variable "max_ttl" {
+    description = "Maximum TTL"
+    type        = number
+    default     = 86400
+    }
+
+    variable "compress" {
+    description = "Enable compression"
+    type        = bool
+    default     = true
+    }
+
+    variable "price_class" {
+    description = "Price class for the distribution"
+    type        = string
+    default     = "PriceClass_100"
+    }
+
+    variable "geo_restriction_type" {
+    description = "Geo restriction type"
+    type        = string
+    default     = "none"
+    }
+
+    variable "geo_restriction_locations" {
+    description = "Geo restriction locations"
+    type        = list(string)
+    default     = []
+    }
+
+    variable "use_default_certificate" {
+    description = "Use default CloudFront certificate"
+    type        = bool
+    default     = true
+    }
+
+    variable "ssl_certificate_arn" {
+    description = "ACM certificate ARN for custom SSL"
+    type        = string
+    default     = null
+    }
+
+    variable "web_acl_id" {
+    description = "WAF Web ACL ID"
+    type        = string
+    default     = null
+    }
+
+    variable "custom_error_responses" {
+    description = "Custom error response configuration"
+    type = list(object({
+        error_code            = number
+        response_code         = number
+        response_page_path    = string
+        error_caching_min_ttl = number
+    }))
+    default = []
+    }
+
+    variable "common_tags" {
+    description = "Common tags for all resources"
+    type        = map(string)
+    default = {
+        Terraform   = "true"
+        Environment = "dev"
+    }
+    }''',
+            "outputs.tf": '''output "cloudfront_distribution_id" {
+    description = "CloudFront Distribution ID"
+    value       = aws_cloudfront_distribution.main.id
+    }
+
+    output "cloudfront_distribution_arn" {
+    description = "CloudFront Distribution ARN"
+    value       = aws_cloudfront_distribution.main.arn
+    }
+
+    output "cloudfront_domain_name" {
+    description = "CloudFront Distribution domain name"
+    value       = aws_cloudfront_distribution.main.domain_name
+    }
+
+    output "cloudfront_hosted_zone_id" {
+    description = "CloudFront Distribution hosted zone ID"
+    value       = aws_cloudfront_distribution.main.hosted_zone_id
+    }
+
+    output "origin_bucket_name" {
+    description = "Origin S3 bucket name"
+    value       = var.create_s3_origin ? aws_s3_bucket.origin[0].bucket : null
+    }
+
+    output "origin_bucket_arn" {
+    description = "Origin S3 bucket ARN"
+    value       = var.create_s3_origin ? aws_s3_bucket.origin[0].arn : null
+    }'''
         }
     
     def _get_alb_code(self) -> Dict[str, str]:
-        return {
-            "main.tf": '''# Application Load Balancer
-resource "aws_lb" "main" {
-  name               = "${var.environment}-${var.alb_name}"
-  internal           = var.internal_alb
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb.id]
-  subnets            = var.subnet_ids
-
-  enable_deletion_protection = var.enable_deletion_protection
-
-  tags = merge(var.common_tags, {
-    Name = "${var.environment}-${var.alb_name}"
-  })
-}
-
-# ALB Security Group
-resource "aws_security_group" "alb" {
-  name_prefix = "${var.environment}-${var.alb_name}-alb-"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = merge(var.common_tags, {
-    Name = "${var.environment}-${var.alb_name}-alb-sg"
-  })
-}
-
-# Target Group
-resource "aws_lb_target_group" "main" {
-  name     = "${var.environment}-${var.alb_name}-tg"
-  port     = var.target_port
-  protocol = "HTTP"
-  vpc_id   = var.vpc_id
-
-  health_check {
-    enabled             = true
-    healthy_threshold   = 2
-    interval            = 30
-    matcher             = "200"
-    path                = var.health_check_path
-    port                = "traffic-port"
-    protocol            = "HTTP"
-    timeout             = 5
-    unhealthy_threshold = 2
-  }
-
-  tags = merge(var.common_tags, {
-    Name = "${var.environment}-${var.alb_name}-tg"
-  })
-}
-
-# ALB Listener
-resource "aws_lb_listener" "main" {
-  load_balancer_arn = aws_lb.main.arn
-  port              = "80"
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.main.arn
-  }
-}''',
-            "variables.tf": '''variable "environment" {
-  description = "Environment name"
-  type        = string
-  default     = "dev"
-}
-
-variable "alb_name" {
-  description = "Name for the ALB"
-  type        = string
-  default     = "web-alb"
-}
-
-variable "vpc_id" {
-  description = "VPC ID where the ALB will be created"
-  type        = string
-}
-
-variable "subnet_ids" {
-  description = "Subnet IDs for the ALB"
-  type        = list(string)
-}
-
-variable "internal_alb" {
-  description = "Whether the ALB is internal"
-  type        = bool
-  default     = false
-}
-
-variable "enable_deletion_protection" {
-  description = "Enable deletion protection for the ALB"
-  type        = bool
-  default     = false
-}
-
-variable "target_port" {
-  description = "Port for the target group"
-  type        = number
-  default     = 80
-}
-
-variable "health_check_path" {
-  description = "Health check path"
-  type        = string
-  default     = "/"
-}
-
-variable "common_tags" {
-  description = "Common tags to apply to all resources"
-  type        = map(string)
-  default = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
-}''',
-            "outputs.tf": '''output "alb_arn" {
-  description = "ARN of the ALB"
-  value       = aws_lb.main.arn
-}
-
-output "alb_dns_name" {
-  description = "DNS name of the ALB"
-  value       = aws_lb.main.dns_name
-}
-
-output "alb_zone_id" {
-  description = "Zone ID of the ALB"
-  value       = aws_lb.main.zone_id
-}
-
-output "target_group_arn" {
-  description = "ARN of the target group"
-  value       = aws_lb_target_group.main.arn
-}'''
-        }
+        return self._get_basic_code("Application Load Balancer")
+    
+    def _get_nlb_code(self) -> Dict[str, str]:
+        return self._get_basic_code("Network Load Balancer")
     
     def _get_eks_code(self) -> Dict[str, str]:
-        return {
-            "main.tf": '''# EKS Cluster
-resource "aws_eks_cluster" "main" {
-  name     = "${var.environment}-${var.cluster_name}"
-  role_arn = aws_iam_role.cluster.arn
-  version  = var.kubernetes_version
-
-  vpc_config {
-    subnet_ids              = var.subnet_ids
-    endpoint_private_access = var.endpoint_private_access
-    endpoint_public_access  = var.endpoint_public_access
-    public_access_cidrs     = var.public_access_cidrs
-  }
-
-  encryption_config {
-    provider {
-      key_arn = aws_kms_key.eks.arn
-    }
-    resources = ["secrets"]
-  }
-
-  depends_on = [
-    aws_iam_role_policy_attachment.cluster_amazon_eks_cluster_policy,
-  ]
-
-  tags = merge(var.common_tags, {
-    Name = "${var.environment}-${var.cluster_name}"
-  })
-}
-
-# EKS Node Group
-resource "aws_eks_node_group" "main" {
-  cluster_name    = aws_eks_cluster.main.name
-  node_group_name = "${var.environment}-${var.cluster_name}-nodes"
-  node_role_arn   = aws_iam_role.node_group.arn
-  subnet_ids      = var.private_subnet_ids
-
-  capacity_type  = var.capacity_type
-  instance_types = var.instance_types
-
-  scaling_config {
-    desired_size = var.desired_capacity
-    max_size     = var.max_capacity
-    min_size     = var.min_capacity
-  }
-
-  update_config {
-    max_unavailable = 1
-  }
-
-  depends_on = [
-    aws_iam_role_policy_attachment.node_group_amazon_eks_worker_node_policy,
-    aws_iam_role_policy_attachment.node_group_amazon_eks_cni_policy,
-    aws_iam_role_policy_attachment.node_group_amazon_ec2_container_registry_read_only,
-  ]
-
-  tags = merge(var.common_tags, {
-    Name = "${var.environment}-${var.cluster_name}-nodes"
-  })
-}''',
-            "variables.tf": '''variable "environment" {
-  description = "Environment name"
-  type        = string
-  default     = "dev"
-}
-
-variable "cluster_name" {
-  description = "Name of the EKS cluster"
-  type        = string
-  default     = "main"
-}
-
-variable "kubernetes_version" {
-  description = "Kubernetes version"
-  type        = string
-  default     = "1.27"
-}
-
-variable "subnet_ids" {
-  description = "Subnet IDs for the EKS cluster"
-  type        = list(string)
-}
-
-variable "private_subnet_ids" {
-  description = "Private subnet IDs for the node group"
-  type        = list(string)
-}
-
-variable "endpoint_private_access" {
-  description = "Enable private API server endpoint"
-  type        = bool
-  default     = true
-}
-
-variable "endpoint_public_access" {
-  description = "Enable public API server endpoint"
-  type        = bool
-  default     = true
-}
-
-variable "public_access_cidrs" {
-  description = "CIDR blocks that can access the public endpoint"
-  type        = list(string)
-  default     = ["0.0.0.0/0"]
-}
-
-variable "instance_types" {
-  description = "Instance types for the node group"
-  type        = list(string)
-  default     = ["t3.medium"]
-}
-
-variable "capacity_type" {
-  description = "Capacity type for the node group"
-  type        = string
-  default     = "ON_DEMAND"
-}
-
-variable "desired_capacity" {
-  description = "Desired number of nodes"
-  type        = number
-  default     = 2
-}
-
-variable "max_capacity" {
-  description = "Maximum number of nodes"
-  type        = number
-  default     = 4
-}
-
-variable "min_capacity" {
-  description = "Minimum number of nodes"
-  type        = number
-  default     = 1
-}
-
-variable "common_tags" {
-  description = "Common tags to apply to all resources"
-  type        = map(string)
-  default = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
-}''',
-            "outputs.tf": '''output "cluster_id" {
-  description = "EKS cluster ID"
-  value       = aws_eks_cluster.main.id
-}
-
-output "cluster_arn" {
-  description = "EKS cluster ARN"
-  value       = aws_eks_cluster.main.arn
-}
-
-output "cluster_endpoint" {
-  description = "EKS cluster endpoint"
-  value       = aws_eks_cluster.main.endpoint
-}
-
-output "cluster_security_group_id" {
-  description = "Security group ID attached to the EKS cluster"
-  value       = aws_eks_cluster.main.vpc_config[0].cluster_security_group_id
-}
-
-output "cluster_certificate_authority_data" {
-  description = "Base64 encoded certificate data required to communicate with the cluster"
-  value       = aws_eks_cluster.main.certificate_authority[0].data
-}'''
-        }
+        return self._get_basic_code("EKS Cluster")
+    
+    def _get_ecs_code(self) -> Dict[str, str]:
+        return self._get_basic_code("ECS Cluster")
     
     def _get_rds_code(self) -> Dict[str, str]:
-        return {
-            "main.tf": '''# RDS Database
-resource "aws_db_instance" "main" {
-  identifier = "${var.environment}-${var.db_name}"
-
-  # Engine options
-  engine         = var.engine
-  engine_version = var.engine_version
-  instance_class = var.instance_class
-
-  # Storage
-  allocated_storage     = var.allocated_storage
-  max_allocated_storage = var.max_allocated_storage
-  storage_type          = var.storage_type
-  storage_encrypted     = true
-
-  # Database configuration
-  db_name  = var.database_name
-  username = var.username
-  password = var.password
-  port     = var.port
-
-  # Network & Security
-  vpc_security_group_ids = [aws_security_group.rds.id]
-  db_subnet_group_name   = aws_db_subnet_group.main.name
-  publicly_accessible    = var.publicly_accessible
-
-  # Backup & Maintenance
-  backup_retention_period = var.backup_retention_period
-  backup_window          = var.backup_window
-  maintenance_window     = var.maintenance_window
-  delete_automated_backups = false
-
-  # Monitoring
-  performance_insights_enabled = var.performance_insights_enabled
-  monitoring_interval         = var.monitoring_interval
-
-  # Deletion protection
-  deletion_protection = var.deletion_protection
-  skip_final_snapshot = var.skip_final_snapshot
-
-  tags = merge(var.common_tags, {
-    Name = "${var.environment}-${var.db_name}"
-  })
-}
-
-# DB Subnet Group
-resource "aws_db_subnet_group" "main" {
-  name       = "${var.environment}-${var.db_name}-subnet-group"
-  subnet_ids = var.subnet_ids
-
-  tags = merge(var.common_tags, {
-    Name = "${var.environment}-${var.db_name}-subnet-group"
-  })
-}
-
-# Security Group for RDS
-resource "aws_security_group" "rds" {
-  name_prefix = "${var.environment}-${var.db_name}-rds-"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    from_port       = var.port
-    to_port         = var.port
-    protocol        = "tcp"
-    security_groups = var.allowed_security_groups
-    cidr_blocks     = var.allowed_cidr_blocks
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = merge(var.common_tags, {
-    Name = "${var.environment}-${var.db_name}-rds-sg"
-  })
-}''',
-            "variables.tf": '''variable "environment" {
-  description = "Environment name"
-  type        = string
-  default     = "dev"
-}
-
-variable "db_name" {
-  description = "Name identifier for the RDS instance"
-  type        = string
-  default     = "main"
-}
-
-variable "engine" {
-  description = "Database engine"
-  type        = string
-  default     = "mysql"
-}
-
-variable "engine_version" {
-  description = "Database engine version"
-  type        = string
-  default     = "8.0"
-}
-
-variable "instance_class" {
-  description = "RDS instance class"
-  type        = string
-  default     = "db.t3.micro"
-}
-
-variable "allocated_storage" {
-  description = "Initial allocated storage in GB"
-  type        = number
-  default     = 20
-}
-
-variable "max_allocated_storage" {
-  description = "Maximum allocated storage in GB"
-  type        = number
-  default     = 100
-}
-
-variable "storage_type" {
-  description = "Storage type"
-  type        = string
-  default     = "gp2"
-}
-
-variable "database_name" {
-  description = "Name of the database"
-  type        = string
-  default     = "appdb"
-}
-
-variable "username" {
-  description = "Database master username"
-  type        = string
-  default     = "admin"
-}
-
-variable "password" {
-  description = "Database master password"
-  type        = string
-  sensitive   = true
-}
-
-variable "port" {
-  description = "Database port"
-  type        = number
-  default     = 3306
-}
-
-variable "vpc_id" {
-  description = "VPC ID"
-  type        = string
-}
-
-variable "subnet_ids" {
-  description = "Subnet IDs for the DB subnet group"
-  type        = list(string)
-}
-
-variable "allowed_security_groups" {
-  description = "Security groups allowed to access the database"
-  type        = list(string)
-  default     = []
-}
-
-variable "allowed_cidr_blocks" {
-  description = "CIDR blocks allowed to access the database"
-  type        = list(string)
-  default     = []
-}
-
-variable "publicly_accessible" {
-  description = "Whether the database is publicly accessible"
-  type        = bool
-  default     = false
-}
-
-variable "backup_retention_period" {
-  description = "Backup retention period in days"
-  type        = number
-  default     = 7
-}
-
-variable "backup_window" {
-  description = "Backup window"
-  type        = string
-  default     = "03:00-04:00"
-}
-
-variable "maintenance_window" {
-  description = "Maintenance window"
-  type        = string
-  default     = "sun:04:00-sun:05:00"
-}
-
-variable "performance_insights_enabled" {
-  description = "Enable Performance Insights"
-  type        = bool
-  default     = false
-}
-
-variable "monitoring_interval" {
-  description = "Enhanced monitoring interval"
-  type        = number
-  default     = 0
-}
-
-variable "deletion_protection" {
-  description = "Enable deletion protection"
-  type        = bool
-  default     = true
-}
-
-variable "skip_final_snapshot" {
-  description = "Skip final snapshot when deleting"
-  type        = bool
-  default     = false
-}
-
-variable "common_tags" {
-  description = "Common tags to apply to all resources"
-  type        = map(string)
-  default = {
-    Terraform   = "true"
-    Environment = "dev"
-  }
-}''',
-            "outputs.tf": '''output "db_instance_address" {
-  description = "RDS instance hostname"
-  value       = aws_db_instance.main.address
-}
-
-output "db_instance_arn" {
-  description = "RDS instance ARN"
-  value       = aws_db_instance.main.arn
-}
-
-output "db_instance_endpoint" {
-  description = "RDS instance endpoint"
-  value       = aws_db_instance.main.endpoint
-}
-
-output "db_instance_id" {
-  description = "RDS instance ID"
-  value       = aws_db_instance.main.id
-}
-
-output "db_instance_port" {
-  description = "RDS instance port"
-  value       = aws_db_instance.main.port
-}
-
-output "db_subnet_group_id" {
-  description = "DB subnet group name"
-  value       = aws_db_subnet_group.main.id
-}
-
-output "db_security_group_id" {
-  description = "RDS security group ID"
-  value       = aws_security_group.rds.id
-}'''
-        }
+        return self._get_basic_code("RDS Database")
+    
+    def _get_asg_code(self) -> Dict[str, str]:
+        return self._get_basic_code("Auto Scaling Group")
+    
+    def _get_cloudfront_code(self) -> Dict[str, str]:
+        return self._get_basic_code("CloudFront Distribution")
+    
+    def _get_api_gateway_code(self) -> Dict[str, str]:
+        return self._get_basic_code("API Gateway")
+    
+    def _get_sqs_code(self) -> Dict[str, str]:
+        return self._get_basic_code("SQS Queue")
+    
+    def _get_sns_code(self) -> Dict[str, str]:
+        return self._get_basic_code("SNS Topic")
+    
+    def _get_dynamodb_code(self) -> Dict[str, str]:
+        return self._get_basic_code("DynamoDB Table")
+    
+    def _get_elasticache_code(self) -> Dict[str, str]:
+        return self._get_basic_code("ElastiCache Redis Cluster")
+    
+    def _get_route53_code(self) -> Dict[str, str]:
+        return self._get_basic_code("Route53 DNS Configuration")
+    
+    def _get_iam_code(self) -> Dict[str, str]:
+        return self._get_basic_code("IAM Roles and Policies")
+    
+    def _get_secrets_manager_code(self) -> Dict[str, str]:
+        return self._get_basic_code("AWS Secrets Manager")
+    
+    def _get_parameter_store_code(self) -> Dict[str, str]:
+        return self._get_basic_code("Systems Manager Parameter Store")
+    
+    def _get_cloudwatch_code(self) -> Dict[str, str]:
+        return self._get_basic_code("CloudWatch Monitoring")
+    
+    def _get_ecr_code(self) -> Dict[str, str]:
+        return self._get_basic_code("ECR Repository")
+    
+    def _get_codepipeline_code(self) -> Dict[str, str]:
+        return self._get_basic_code("CodePipeline")
+    
+    def _get_efs_code(self) -> Dict[str, str]:
+        return self._get_basic_code("EFS File System")
+    
+    def _get_nat_gateway_code(self) -> Dict[str, str]:
+        return self._get_basic_code("NAT Gateway")
+    
+    def _get_security_groups_code(self) -> Dict[str, str]:
+        return self._get_basic_code("Security Groups Configuration")
+    
+    def _get_three_tier_code(self) -> Dict[str, str]:
+        return self._get_basic_code("3-Tier Web Application Architecture")
+    
+    def _get_serverless_webapp_code(self) -> Dict[str, str]:
+        return self._get_basic_code("Serverless Web Application")
+    
+    def _get_data_lake_code(self) -> Dict[str, str]:
+        return self._get_basic_code("Data Lake Architecture")
+    
     
     def _get_basic_code(self, pattern_name: str) -> Dict[str, str]:
         return {
@@ -1509,8 +3044,8 @@ def generate_jenkins_pipeline(project_name: str, git_repo: str, tf_version: str,
 }}"""
 
 # UI Components
-def render_pattern_browser():
-    """Render the pattern browser interface"""
+def render_pattern_browser_updated():
+    """Updated pattern browser with expanded categories"""
     st.header("🔍 Terraform Pattern Browser")
     st.markdown("Browse and download official Terraform patterns from curated repositories.")
     
@@ -1529,7 +3064,8 @@ def render_pattern_browser():
         
         category_filter = st.selectbox(
             "Category", 
-            ["All", "compute", "storage", "networking", "database", "security"]
+            ["All", "compute", "storage", "networking", "database", "security", 
+             "messaging", "monitoring", "devops", "architecture"]
         )
         
         complexity_filter = st.selectbox(
