@@ -3044,7 +3044,7 @@ def generate_jenkins_pipeline(project_name: str, git_repo: str, tf_version: str,
 }}"""
 
 # UI Components
-def render_pattern_browser_updated():
+def render_pattern_browser():
     """Updated pattern browser with expanded categories"""
     st.header("🔍 Terraform Pattern Browser")
     st.markdown("Browse and download official Terraform patterns from curated repositories.")
