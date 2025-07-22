@@ -667,7 +667,7 @@ class GitHubPatternFetcher:
             }'''
                 }
 
-            def _get_security_groups_code(self) -> Dict[str, str]:
+    def _get_security_groups_code(self) -> Dict[str, str]:
                 return {
                     "main.tf": '''# Web Tier Security Group
             resource "aws_security_group" "web" {
