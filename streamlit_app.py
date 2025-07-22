@@ -178,9 +178,9 @@ class EnhancedGitHubFetcher:
         search_terms = [
             query,
             "terraform",
-            f"language:{language}",
+            #f"language:{language}",
             "NOT is:fork",  # Exclude forks
-            "stars:>5"  # Minimum 5 stars for quality
+            "stars:>1"  # Minimum 5 stars for quality
         ]
         
         search_query = " ".join(search_terms)
@@ -3632,14 +3632,14 @@ def render_github_search():
             min_stars = st.number_input(
                 "Minimum stars",
                 min_value=0,
-                value=5,
+                value=1,
                 help="Filter repositories by minimum star count"
             )
         
         with col5:
             official_only = st.checkbox(
                 "Official repos only",
-                value=True,
+                value=False,
                 help="Only show repositories from verified organizations"
             )
     
