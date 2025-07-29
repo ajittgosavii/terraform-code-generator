@@ -6,7 +6,7 @@ import zipfile
 import json
 import re
 import time
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 import plotly.express as px
@@ -92,7 +92,7 @@ class TerraformPattern:
     category: str
     provider: str
     complexity: str
-    files: List[str] = None
+    files: Optional[List[str]] = None
 
 @dataclass
 class GitHubRepository:
@@ -108,7 +108,7 @@ class GitHubRepository:
     updated_at: str
     topics: List[str]
     is_official: bool = False
-    terraform_files: List[str] = None
+    terraform_files: Optional[List[str]] = None
 
 @dataclass
 class TerraformFile:
@@ -143,7 +143,7 @@ class EnhancedGitHubFetcher:
         self.last_request_time = 0
         self.min_request_interval = 1  # Minimum 1 second between requests
     
-    def _make_request(self, url: str, params: Dict = None) -> Optional[Dict]:
+    def _make_request(self, url: str, params: Optional[Dict] = None) -> Optional[Dict]:
         """Make rate-limited GitHub API request"""
         # Simple rate limiting
         current_time = time.time()
@@ -590,50 +590,28 @@ class EnhancedGitHubFetcher:
 
     def get_pattern_code(self, pattern: TerraformPattern) -> Dict[str, str]:
         """Generate sample code for a pattern"""
-        if "VPC" in pattern.name:
-            return self._get_vpc_code()
-        elif "EC2" in pattern.name:
-            return self._get_ec2_code()
-        elif "RDS" in pattern.name:
-            return self._get_rds_code()
-        elif "S3" in pattern.name:
-            return self._get_s3_code()
-        elif "Application Load Balancer" in pattern.name:
-            return self._get_alb_code()
-        elif "EKS" in pattern.name:
-            return self._get_eks_code()
-        elif "Lambda" in pattern.name:
-            return self._get_lambda_code()
-        elif "Auto Scaling" in pattern.name:
-            return self._get_asg_code()
-        elif "CloudFront" in pattern.name:
-            return self._get_cloudfront_code()
-        elif "API Gateway" in pattern.name:
-            return self._get_api_gateway_code()
-        elif "SQS" in pattern.name:
-            return self._get_sqs_code()
-        elif "SNS" in pattern.name:
-            return self._get_sns_code()
-        elif "IAM" in pattern.name:
-            return self._get_iam_code()
-        elif "Secrets Manager" in pattern.name:
-            return self._get_secrets_manager_code()
-        elif "CloudWatch" in pattern.name:
-            return self._get_cloudwatch_code()
-        elif "DynamoDB" in pattern.name:
-            return self._get_dynamodb_code()
-        elif "ElastiCache" in pattern.name:
-            return self._get_elasticache_code()
-        elif "Route53" in pattern.name:
-            return self._get_route53_code()
-        elif "Security Groups" in pattern.name:
-            return self._get_security_groups_code()
-        elif "3-Tier" in pattern.name:
-            return self._get_three_tier_code()
-        elif "Serverless Web" in pattern.name:
-            return self._get_serverless_webapp_code()
-        else:
-            return self._get_basic_code(pattern.name)
+        pattern_generators = {
+            "VPC": self._get_vpc_code,
+            "DynamoDB": self._get_dynamodb_code,
+            "Security Groups": self._get_security_groups_code,
+            "API Gateway": self._get_api_gateway_code,
+            "SQS": self._get_sqs_code,
+            "SNS": self._get_sns_code,
+            "Lambda": self._get_lambda_code,
+            "Auto Scaling": self._get_asg_code,
+            "CloudFront": self._get_cloudfront_code
+        }
+        
+        for keyword, generator in pattern_generators.items():
+            if keyword in pattern.name:
+                return generator()
+        
+        basic_patterns = self._get_pattern_code_mapping()
+        for pattern_key in basic_patterns:
+            if pattern_key in pattern.name:
+                return self._get_basic_code(basic_patterns[pattern_key])
+        
+        return self._get_basic_code(pattern.name)
 
     # Add these additional methods to your GitHubPatternFetcher class
     def _get_dynamodb_code(self) -> Dict[str, str]:
@@ -3145,41 +3123,22 @@ output "nat_gateway_ids" {
 }'''
         }
 
-    def _get_ec2_code(self) -> Dict[str, str]:
-        return self._get_basic_code("EC2 Instance")
-
-    def _get_rds_code(self) -> Dict[str, str]:
-        return self._get_basic_code("RDS Database")
-
-    def _get_s3_code(self) -> Dict[str, str]:
-        return self._get_basic_code("S3 Bucket")
-
-    def _get_alb_code(self) -> Dict[str, str]:
-        return self._get_basic_code("Application Load Balancer")
-
-    def _get_eks_code(self) -> Dict[str, str]:
-        return self._get_basic_code("EKS Cluster")
-
-    def _get_iam_code(self) -> Dict[str, str]:
-        return self._get_basic_code("IAM Roles and Policies")
-
-    def _get_secrets_manager_code(self) -> Dict[str, str]:
-        return self._get_basic_code("AWS Secrets Manager")
-
-    def _get_cloudwatch_code(self) -> Dict[str, str]:
-        return self._get_basic_code("CloudWatch Monitoring")
-
-    def _get_elasticache_code(self) -> Dict[str, str]:
-        return self._get_basic_code("ElastiCache Redis")
-
-    def _get_route53_code(self) -> Dict[str, str]:
-        return self._get_basic_code("Route53 DNS")
-
-    def _get_three_tier_code(self) -> Dict[str, str]:
-        return self._get_basic_code("3-Tier Web Application")
-
-    def _get_serverless_webapp_code(self) -> Dict[str, str]:
-        return self._get_basic_code("Serverless Web Application")
+    def _get_pattern_code_mapping(self) -> Dict[str, str]:
+        """Mapping of pattern names to their corresponding code generation methods"""
+        return {
+            "EC2 Instance": "EC2 Instance",
+            "RDS Database": "RDS Database", 
+            "S3 Bucket": "S3 Bucket",
+            "Application Load Balancer": "Application Load Balancer",
+            "EKS Cluster": "EKS Cluster",
+            "IAM Roles and Policies": "IAM Roles and Policies",
+            "AWS Secrets Manager": "AWS Secrets Manager",
+            "CloudWatch Monitoring": "CloudWatch Monitoring",
+            "ElastiCache Redis": "ElastiCache Redis",
+            "Route53 DNS": "Route53 DNS",
+            "3-Tier Web Application": "3-Tier Web Application",
+            "Serverless Web Application": "Serverless Web Application"
+        }
     
     def _get_basic_code(self, pattern_name: str) -> Dict[str, str]:
         return {
@@ -3390,7 +3349,7 @@ def create_terraform_zip(files_dict: Dict[str, str]) -> bytes:
     zip_buffer.seek(0)
     return zip_buffer.read()
 
-def extract_terraform_info(content: str) -> Dict[str, any]:
+def extract_terraform_info(content: str) -> Dict[str, Any]:
     """Extract useful information from Terraform code"""
     info = {
         "resources": [],
